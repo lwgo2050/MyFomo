@@ -11,6 +11,15 @@ contract MyFomoDataSet {
         uint256 pot;    // 当前可以供最终玩家的信息
         uint256 mask;   // global mask
     }
+
+    struct User {
+        address addr;           // 用户钱包地址
+        bytes32 name;           // 用户名(邀请码)
+        bytes32 intiterName;    // 邀请人名称
+        uint256 inviteNum;      // 该用户邀请的人数
+    }
+
+
     
     struct UserAmount {
         uint256 totalKeys;          // 购买钥匙总量

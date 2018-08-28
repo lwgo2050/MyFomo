@@ -58,25 +58,32 @@ contract MyFomo {
 
     function getUserByName(string name) 
         public
+        view
+        returns(address,bytes32,bytes32,uint256)
     {
-
     }
 
-    function getUserByAddr(address addr) public
+    function getUserByAddr(address addr)
+        public
+        view
+        returns(address,bytes32,bytes32,uint256)
     {
 
     }
 
     function getUserAmountByName(string name) 
         public
-    {
+        view
+        returns(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+    { 
 
     }
 
     function getUserAmountByAddr(address addr)
         public
-    {
-        
+        view
+        returns(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+    { 
     }
 
 
