@@ -2,8 +2,34 @@ pragma solidity ^0.4.23;
 import "./MyFomoEvents.sol";
 import "./MyFomoDataSet.sol";
 
+import "./library/SafeMath.sol";
+import "./library/UintCompressor.sol";
+import "./library/NameFilter.sol";
+import "./library/UintCompressor.sol";
+import "./library/KeysCalcLong.sol";
+
 contract MyFomo {
+    using SafeMath for *;
+    using NameFilter for string;
+    using KeysCalcLong for uint256;
+
      bool public activated_ = false;
+
+    uint256 constant private rndInit_ = 1 hours;                // round timer starts at this
+    uint256 constant private rndInc_ = 30 seconds;              // every full key purchased adds this much to the timer
+    uint256 constant private rndMax_ = 24 hours;                // max length a round timer can be
+
+    mapping (uint256 => MyFomoDataSet.Round) public main_round_;   // (rID => data) round data
+    mapping (uint256 => MyFomoDataSet.Round) public sub_round_;   // (rID => data) round data
+
+    uint256 public main_round_id_;    // round id number / total rounds that have happened
+    uint256 public sub_round_id_;    // round id number / total rounds that have happened
+
+    mapping(address => MyFomoDataSet.UserAmount) public user_amounts_;
+    mapping(address => MyFomoDataSet.User) public address_user_map_;
+    // mapping(string => MyFomoDataSet.User) public name_user_map_;
+
+
 
     /**
      * @dev used to make sure no one can interact with contract until it has 

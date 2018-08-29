@@ -1,24 +1,24 @@
 {
   "contractName": "MyFomoDataSet",
   "abi": [],
-  "bytecode": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a72305820e7b4808595429c4cb005cf76121282d45151ec01132fb132fb4b9143ce8315f20029",
-  "deployedBytecode": "0x6080604052600080fd00a165627a7a72305820e7b4808595429c4cb005cf76121282d45151ec01132fb132fb4b9143ce8315f20029",
-  "sourceMap": "55:1281:4:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;55:1281:4;;;;;;;",
-  "deployedSourceMap": "55:1281:4:-;;;;;",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a723058208861c315690bb3d59e5287a1df918d8e952d3dc262e332ba3543347c5f1555b30029",
+  "deployedBytecode": "0x6080604052600080fd00a165627a7a723058208861c315690bb3d59e5287a1df918d8e952d3dc262e332ba3543347c5f1555b30029",
+  "sourceMap": "55:1281:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;55:1281:1;;;;;;;",
+  "deployedSourceMap": "55:1281:1:-;;;;;",
   "source": "pragma solidity ^0.4.23;\nimport \"./MyFomoEvents.sol\";\n\ncontract MyFomoDataSet {\n    struct Round {\n        uint256 strt;   // 游戏的开始时间\n        uint256 end;    // 游戏结束时间\n        bool ended;     // 当前轮游戏是否已经结束\n        uint256 keys;   // 总钥匙数\n        uint256 eth;    //  总eth金额\n        uint256 pot;    // 当前可以供最终玩家的信息\n        uint256 mask;   // global mask\n    }\n\n    struct User {\n        address addr;           // 用户钱包地址\n        bytes32 name;           // 用户名(邀请码)\n        bytes32 intiterName;    // 邀请人名称\n        uint256 inviteNum;      // 该用户邀请的人数\n    }\n\n\n    \n    struct UserAmount {\n        uint256 totalKeys;          // 购买钥匙总量\n        uint256 totalBet;           // 总投注量\n        uint256 lastKeys;           // 最后一次购买钥匙数量\n        uint256 lastBet;            // 最后一次投注量\n        uint256 totalBalance;       // 总余额\n        uint256 withdrawAble;       // 可提现总量\n        uint256 withdraw;           // 已提现数量\n        uint256 totalProfit;        // 获益总量 （不算成本)\n        uint256 inviteProfit;       // 邀请获益\n        mapping(uint256 => uint256) roundProfit;    // 每轮获利 （不算成本)\n    }\n\n}\n",
-  "sourcePath": "/Users/wangmaodong/develop/myproject/myfomo/contracts/MyFomoDataSet.sol",
+  "sourcePath": "/Users/wangmaodong/develop/myproject/MyFomo/contracts/MyFomoDataSet.sol",
   "ast": {
-    "absolutePath": "/Users/wangmaodong/develop/myproject/myfomo/contracts/MyFomoDataSet.sol",
+    "absolutePath": "/Users/wangmaodong/develop/myproject/MyFomo/contracts/MyFomoDataSet.sol",
     "exportedSymbols": {
       "MyFomoDataSet": [
-        618
+        301
       ]
     },
-    "id": 619,
+    "id": 302,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 569,
+        "id": 252,
         "literals": [
           "solidity",
           "^",
@@ -26,16 +26,16 @@
           ".23"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:24:4"
+        "src": "0:24:1"
       },
       {
-        "absolutePath": "/Users/wangmaodong/develop/myproject/myfomo/contracts/MyFomoEvents.sol",
+        "absolutePath": "/Users/wangmaodong/develop/myproject/MyFomo/contracts/MyFomoEvents.sol",
         "file": "./MyFomoEvents.sol",
-        "id": 570,
+        "id": 253,
         "nodeType": "ImportDirective",
-        "scope": 619,
-        "sourceUnit": 718,
-        "src": "25:28:4",
+        "scope": 302,
+        "sourceUnit": 401,
+        "src": "25:28:1",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -45,24 +45,24 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 618,
+        "id": 301,
         "linearizedBaseContracts": [
-          618
+          301
         ],
         "name": "MyFomoDataSet",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "MyFomoDataSet.Round",
-            "id": 585,
+            "id": 268,
             "members": [
               {
                 "constant": false,
-                "id": 572,
+                "id": 255,
                 "name": "strt",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "107:12:4",
+                "scope": 268,
+                "src": "107:12:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -70,10 +70,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 571,
+                  "id": 254,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "107:7:4",
+                  "src": "107:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -84,11 +84,11 @@
               },
               {
                 "constant": false,
-                "id": 574,
+                "id": 257,
                 "name": "end",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "156:11:4",
+                "scope": 268,
+                "src": "156:11:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -96,10 +96,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 573,
+                  "id": 256,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "156:7:4",
+                  "src": "156:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -110,11 +110,11 @@
               },
               {
                 "constant": false,
-                "id": 576,
+                "id": 259,
                 "name": "ended",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "202:10:4",
+                "scope": 268,
+                "src": "202:10:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -122,10 +122,10 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 575,
+                  "id": 258,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
-                  "src": "202:4:4",
+                  "src": "202:4:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bool",
                     "typeString": "bool"
@@ -136,11 +136,11 @@
               },
               {
                 "constant": false,
-                "id": 578,
+                "id": 261,
                 "name": "keys",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "263:12:4",
+                "scope": 268,
+                "src": "263:12:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -148,10 +148,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 577,
+                  "id": 260,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "263:7:4",
+                  "src": "263:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -162,11 +162,11 @@
               },
               {
                 "constant": false,
-                "id": 580,
+                "id": 263,
                 "name": "eth",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "303:11:4",
+                "scope": 268,
+                "src": "303:11:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -174,10 +174,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 579,
+                  "id": 262,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "303:7:4",
+                  "src": "303:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -188,11 +188,11 @@
               },
               {
                 "constant": false,
-                "id": 582,
+                "id": 265,
                 "name": "pot",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "344:11:4",
+                "scope": 268,
+                "src": "344:11:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -200,10 +200,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 581,
+                  "id": 264,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "344:7:4",
+                  "src": "344:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -214,11 +214,11 @@
               },
               {
                 "constant": false,
-                "id": 584,
+                "id": 267,
                 "name": "mask",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "408:12:4",
+                "scope": 268,
+                "src": "408:12:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -226,10 +226,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 583,
+                  "id": 266,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "408:7:4",
+                  "src": "408:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -241,21 +241,21 @@
             ],
             "name": "Round",
             "nodeType": "StructDefinition",
-            "scope": 618,
-            "src": "84:360:4",
+            "scope": 301,
+            "src": "84:360:1",
             "visibility": "public"
           },
           {
             "canonicalName": "MyFomoDataSet.User",
-            "id": 594,
+            "id": 277,
             "members": [
               {
                 "constant": false,
-                "id": 587,
+                "id": 270,
                 "name": "addr",
                 "nodeType": "VariableDeclaration",
-                "scope": 594,
-                "src": "472:12:4",
+                "scope": 277,
+                "src": "472:12:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -263,10 +263,10 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 586,
+                  "id": 269,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "472:7:4",
+                  "src": "472:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
                     "typeString": "address"
@@ -277,11 +277,11 @@
               },
               {
                 "constant": false,
-                "id": 589,
+                "id": 272,
                 "name": "name",
                 "nodeType": "VariableDeclaration",
-                "scope": 594,
-                "src": "526:12:4",
+                "scope": 277,
+                "src": "526:12:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -289,10 +289,10 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 588,
+                  "id": 271,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
-                  "src": "526:7:4",
+                  "src": "526:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes32",
                     "typeString": "bytes32"
@@ -303,11 +303,11 @@
               },
               {
                 "constant": false,
-                "id": 591,
+                "id": 274,
                 "name": "intiterName",
                 "nodeType": "VariableDeclaration",
-                "scope": 594,
-                "src": "582:19:4",
+                "scope": 277,
+                "src": "582:19:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -315,10 +315,10 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 590,
+                  "id": 273,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
-                  "src": "582:7:4",
+                  "src": "582:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes32",
                     "typeString": "bytes32"
@@ -329,11 +329,11 @@
               },
               {
                 "constant": false,
-                "id": 593,
+                "id": 276,
                 "name": "inviteNum",
                 "nodeType": "VariableDeclaration",
-                "scope": 594,
-                "src": "633:17:4",
+                "scope": 277,
+                "src": "633:17:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -341,10 +341,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 592,
+                  "id": 275,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "633:7:4",
+                  "src": "633:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -356,21 +356,21 @@
             ],
             "name": "User",
             "nodeType": "StructDefinition",
-            "scope": 618,
-            "src": "450:240:4",
+            "scope": 301,
+            "src": "450:240:1",
             "visibility": "public"
           },
           {
             "canonicalName": "MyFomoDataSet.UserAmount",
-            "id": 617,
+            "id": 300,
             "members": [
               {
                 "constant": false,
-                "id": 596,
+                "id": 279,
                 "name": "totalKeys",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "730:17:4",
+                "scope": 300,
+                "src": "730:17:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -378,10 +378,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 595,
+                  "id": 278,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "730:7:4",
+                  "src": "730:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -392,11 +392,11 @@
               },
               {
                 "constant": false,
-                "id": 598,
+                "id": 281,
                 "name": "totalBet",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "788:16:4",
+                "scope": 300,
+                "src": "788:16:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -404,10 +404,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 597,
+                  "id": 280,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "788:7:4",
+                  "src": "788:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -418,11 +418,11 @@
               },
               {
                 "constant": false,
-                "id": 600,
+                "id": 283,
                 "name": "lastKeys",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "840:16:4",
+                "scope": 300,
+                "src": "840:16:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -430,10 +430,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 599,
+                  "id": 282,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "840:7:4",
+                  "src": "840:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -444,11 +444,11 @@
               },
               {
                 "constant": false,
-                "id": 602,
+                "id": 285,
                 "name": "lastBet",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "910:15:4",
+                "scope": 300,
+                "src": "910:15:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -456,10 +456,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 601,
+                  "id": 284,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "910:7:4",
+                  "src": "910:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -470,11 +470,11 @@
               },
               {
                 "constant": false,
-                "id": 604,
+                "id": 287,
                 "name": "totalBalance",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "971:20:4",
+                "scope": 300,
+                "src": "971:20:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -482,10 +482,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 603,
+                  "id": 286,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "971:7:4",
+                  "src": "971:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -496,11 +496,11 @@
               },
               {
                 "constant": false,
-                "id": 606,
+                "id": 289,
                 "name": "withdrawAble",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "1020:20:4",
+                "scope": 300,
+                "src": "1020:20:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -508,10 +508,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 605,
+                  "id": 288,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1020:7:4",
+                  "src": "1020:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -522,11 +522,11 @@
               },
               {
                 "constant": false,
-                "id": 608,
+                "id": 291,
                 "name": "withdraw",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "1075:16:4",
+                "scope": 300,
+                "src": "1075:16:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -534,10 +534,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 607,
+                  "id": 290,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1075:7:4",
+                  "src": "1075:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -548,11 +548,11 @@
               },
               {
                 "constant": false,
-                "id": 610,
+                "id": 293,
                 "name": "totalProfit",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "1130:19:4",
+                "scope": 300,
+                "src": "1130:19:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -560,10 +560,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 609,
+                  "id": 292,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1130:7:4",
+                  "src": "1130:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -574,11 +574,11 @@
               },
               {
                 "constant": false,
-                "id": 612,
+                "id": 295,
                 "name": "inviteProfit",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "1199:20:4",
+                "scope": 300,
+                "src": "1199:20:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -586,10 +586,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 611,
+                  "id": 294,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1199:7:4",
+                  "src": "1199:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -600,11 +600,11 @@
               },
               {
                 "constant": false,
-                "id": 616,
+                "id": 299,
                 "name": "roundProfit",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "1251:39:4",
+                "scope": 300,
+                "src": "1251:39:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -612,28 +612,28 @@
                   "typeString": "mapping(uint256 => uint256)"
                 },
                 "typeName": {
-                  "id": 615,
+                  "id": 298,
                   "keyType": {
-                    "id": 613,
+                    "id": 296,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1259:7:4",
+                    "src": "1259:7:1",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
                   "nodeType": "Mapping",
-                  "src": "1251:27:4",
+                  "src": "1251:27:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_mapping$_t_uint256_$_t_uint256_$",
                     "typeString": "mapping(uint256 => uint256)"
                   },
                   "valueType": {
-                    "id": 614,
+                    "id": 297,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1270:7:4",
+                    "src": "1270:7:1",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -646,29 +646,29 @@
             ],
             "name": "UserAmount",
             "nodeType": "StructDefinition",
-            "scope": 618,
-            "src": "702:631:4",
+            "scope": 301,
+            "src": "702:631:1",
             "visibility": "public"
           }
         ],
-        "scope": 619,
-        "src": "55:1281:4"
+        "scope": 302,
+        "src": "55:1281:1"
       }
     ],
-    "src": "0:1337:4"
+    "src": "0:1337:1"
   },
   "legacyAST": {
-    "absolutePath": "/Users/wangmaodong/develop/myproject/myfomo/contracts/MyFomoDataSet.sol",
+    "absolutePath": "/Users/wangmaodong/develop/myproject/MyFomo/contracts/MyFomoDataSet.sol",
     "exportedSymbols": {
       "MyFomoDataSet": [
-        618
+        301
       ]
     },
-    "id": 619,
+    "id": 302,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 569,
+        "id": 252,
         "literals": [
           "solidity",
           "^",
@@ -676,16 +676,16 @@
           ".23"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:24:4"
+        "src": "0:24:1"
       },
       {
-        "absolutePath": "/Users/wangmaodong/develop/myproject/myfomo/contracts/MyFomoEvents.sol",
+        "absolutePath": "/Users/wangmaodong/develop/myproject/MyFomo/contracts/MyFomoEvents.sol",
         "file": "./MyFomoEvents.sol",
-        "id": 570,
+        "id": 253,
         "nodeType": "ImportDirective",
-        "scope": 619,
-        "sourceUnit": 718,
-        "src": "25:28:4",
+        "scope": 302,
+        "sourceUnit": 401,
+        "src": "25:28:1",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -695,24 +695,24 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 618,
+        "id": 301,
         "linearizedBaseContracts": [
-          618
+          301
         ],
         "name": "MyFomoDataSet",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "MyFomoDataSet.Round",
-            "id": 585,
+            "id": 268,
             "members": [
               {
                 "constant": false,
-                "id": 572,
+                "id": 255,
                 "name": "strt",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "107:12:4",
+                "scope": 268,
+                "src": "107:12:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -720,10 +720,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 571,
+                  "id": 254,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "107:7:4",
+                  "src": "107:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -734,11 +734,11 @@
               },
               {
                 "constant": false,
-                "id": 574,
+                "id": 257,
                 "name": "end",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "156:11:4",
+                "scope": 268,
+                "src": "156:11:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -746,10 +746,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 573,
+                  "id": 256,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "156:7:4",
+                  "src": "156:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -760,11 +760,11 @@
               },
               {
                 "constant": false,
-                "id": 576,
+                "id": 259,
                 "name": "ended",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "202:10:4",
+                "scope": 268,
+                "src": "202:10:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -772,10 +772,10 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 575,
+                  "id": 258,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
-                  "src": "202:4:4",
+                  "src": "202:4:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bool",
                     "typeString": "bool"
@@ -786,11 +786,11 @@
               },
               {
                 "constant": false,
-                "id": 578,
+                "id": 261,
                 "name": "keys",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "263:12:4",
+                "scope": 268,
+                "src": "263:12:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -798,10 +798,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 577,
+                  "id": 260,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "263:7:4",
+                  "src": "263:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -812,11 +812,11 @@
               },
               {
                 "constant": false,
-                "id": 580,
+                "id": 263,
                 "name": "eth",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "303:11:4",
+                "scope": 268,
+                "src": "303:11:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -824,10 +824,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 579,
+                  "id": 262,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "303:7:4",
+                  "src": "303:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -838,11 +838,11 @@
               },
               {
                 "constant": false,
-                "id": 582,
+                "id": 265,
                 "name": "pot",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "344:11:4",
+                "scope": 268,
+                "src": "344:11:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -850,10 +850,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 581,
+                  "id": 264,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "344:7:4",
+                  "src": "344:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -864,11 +864,11 @@
               },
               {
                 "constant": false,
-                "id": 584,
+                "id": 267,
                 "name": "mask",
                 "nodeType": "VariableDeclaration",
-                "scope": 585,
-                "src": "408:12:4",
+                "scope": 268,
+                "src": "408:12:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -876,10 +876,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 583,
+                  "id": 266,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "408:7:4",
+                  "src": "408:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -891,21 +891,21 @@
             ],
             "name": "Round",
             "nodeType": "StructDefinition",
-            "scope": 618,
-            "src": "84:360:4",
+            "scope": 301,
+            "src": "84:360:1",
             "visibility": "public"
           },
           {
             "canonicalName": "MyFomoDataSet.User",
-            "id": 594,
+            "id": 277,
             "members": [
               {
                 "constant": false,
-                "id": 587,
+                "id": 270,
                 "name": "addr",
                 "nodeType": "VariableDeclaration",
-                "scope": 594,
-                "src": "472:12:4",
+                "scope": 277,
+                "src": "472:12:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -913,10 +913,10 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 586,
+                  "id": 269,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "472:7:4",
+                  "src": "472:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
                     "typeString": "address"
@@ -927,11 +927,11 @@
               },
               {
                 "constant": false,
-                "id": 589,
+                "id": 272,
                 "name": "name",
                 "nodeType": "VariableDeclaration",
-                "scope": 594,
-                "src": "526:12:4",
+                "scope": 277,
+                "src": "526:12:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -939,10 +939,10 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 588,
+                  "id": 271,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
-                  "src": "526:7:4",
+                  "src": "526:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes32",
                     "typeString": "bytes32"
@@ -953,11 +953,11 @@
               },
               {
                 "constant": false,
-                "id": 591,
+                "id": 274,
                 "name": "intiterName",
                 "nodeType": "VariableDeclaration",
-                "scope": 594,
-                "src": "582:19:4",
+                "scope": 277,
+                "src": "582:19:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -965,10 +965,10 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 590,
+                  "id": 273,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
-                  "src": "582:7:4",
+                  "src": "582:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes32",
                     "typeString": "bytes32"
@@ -979,11 +979,11 @@
               },
               {
                 "constant": false,
-                "id": 593,
+                "id": 276,
                 "name": "inviteNum",
                 "nodeType": "VariableDeclaration",
-                "scope": 594,
-                "src": "633:17:4",
+                "scope": 277,
+                "src": "633:17:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -991,10 +991,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 592,
+                  "id": 275,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "633:7:4",
+                  "src": "633:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1006,21 +1006,21 @@
             ],
             "name": "User",
             "nodeType": "StructDefinition",
-            "scope": 618,
-            "src": "450:240:4",
+            "scope": 301,
+            "src": "450:240:1",
             "visibility": "public"
           },
           {
             "canonicalName": "MyFomoDataSet.UserAmount",
-            "id": 617,
+            "id": 300,
             "members": [
               {
                 "constant": false,
-                "id": 596,
+                "id": 279,
                 "name": "totalKeys",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "730:17:4",
+                "scope": 300,
+                "src": "730:17:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1028,10 +1028,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 595,
+                  "id": 278,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "730:7:4",
+                  "src": "730:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1042,11 +1042,11 @@
               },
               {
                 "constant": false,
-                "id": 598,
+                "id": 281,
                 "name": "totalBet",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "788:16:4",
+                "scope": 300,
+                "src": "788:16:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1054,10 +1054,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 597,
+                  "id": 280,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "788:7:4",
+                  "src": "788:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1068,11 +1068,11 @@
               },
               {
                 "constant": false,
-                "id": 600,
+                "id": 283,
                 "name": "lastKeys",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "840:16:4",
+                "scope": 300,
+                "src": "840:16:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1080,10 +1080,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 599,
+                  "id": 282,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "840:7:4",
+                  "src": "840:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1094,11 +1094,11 @@
               },
               {
                 "constant": false,
-                "id": 602,
+                "id": 285,
                 "name": "lastBet",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "910:15:4",
+                "scope": 300,
+                "src": "910:15:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1106,10 +1106,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 601,
+                  "id": 284,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "910:7:4",
+                  "src": "910:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1120,11 +1120,11 @@
               },
               {
                 "constant": false,
-                "id": 604,
+                "id": 287,
                 "name": "totalBalance",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "971:20:4",
+                "scope": 300,
+                "src": "971:20:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1132,10 +1132,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 603,
+                  "id": 286,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "971:7:4",
+                  "src": "971:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1146,11 +1146,11 @@
               },
               {
                 "constant": false,
-                "id": 606,
+                "id": 289,
                 "name": "withdrawAble",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "1020:20:4",
+                "scope": 300,
+                "src": "1020:20:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1158,10 +1158,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 605,
+                  "id": 288,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1020:7:4",
+                  "src": "1020:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1172,11 +1172,11 @@
               },
               {
                 "constant": false,
-                "id": 608,
+                "id": 291,
                 "name": "withdraw",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "1075:16:4",
+                "scope": 300,
+                "src": "1075:16:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1184,10 +1184,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 607,
+                  "id": 290,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1075:7:4",
+                  "src": "1075:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1198,11 +1198,11 @@
               },
               {
                 "constant": false,
-                "id": 610,
+                "id": 293,
                 "name": "totalProfit",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "1130:19:4",
+                "scope": 300,
+                "src": "1130:19:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1210,10 +1210,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 609,
+                  "id": 292,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1130:7:4",
+                  "src": "1130:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1224,11 +1224,11 @@
               },
               {
                 "constant": false,
-                "id": 612,
+                "id": 295,
                 "name": "inviteProfit",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "1199:20:4",
+                "scope": 300,
+                "src": "1199:20:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1236,10 +1236,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 611,
+                  "id": 294,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1199:7:4",
+                  "src": "1199:7:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1250,11 +1250,11 @@
               },
               {
                 "constant": false,
-                "id": 616,
+                "id": 299,
                 "name": "roundProfit",
                 "nodeType": "VariableDeclaration",
-                "scope": 617,
-                "src": "1251:39:4",
+                "scope": 300,
+                "src": "1251:39:1",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1262,28 +1262,28 @@
                   "typeString": "mapping(uint256 => uint256)"
                 },
                 "typeName": {
-                  "id": 615,
+                  "id": 298,
                   "keyType": {
-                    "id": 613,
+                    "id": 296,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1259:7:4",
+                    "src": "1259:7:1",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
                   "nodeType": "Mapping",
-                  "src": "1251:27:4",
+                  "src": "1251:27:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_mapping$_t_uint256_$_t_uint256_$",
                     "typeString": "mapping(uint256 => uint256)"
                   },
                   "valueType": {
-                    "id": 614,
+                    "id": 297,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1270:7:4",
+                    "src": "1270:7:1",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1296,16 +1296,16 @@
             ],
             "name": "UserAmount",
             "nodeType": "StructDefinition",
-            "scope": 618,
-            "src": "702:631:4",
+            "scope": 301,
+            "src": "702:631:1",
             "visibility": "public"
           }
         ],
-        "scope": 619,
-        "src": "55:1281:4"
+        "scope": 302,
+        "src": "55:1281:1"
       }
     ],
-    "src": "0:1337:4"
+    "src": "0:1337:1"
   },
   "compiler": {
     "name": "solc",
@@ -1313,5 +1313,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-08-28T15:13:41.560Z"
+  "updatedAt": "2018-08-28T15:48:02.398Z"
 }
