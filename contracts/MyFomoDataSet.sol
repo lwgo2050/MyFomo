@@ -16,12 +16,10 @@ contract MyFomoDataSet {
     struct User {
         address addr;           // 用户钱包地址
         bytes32 name;           // 用户名(邀请码)
-        bytes32 intiterName;    // 邀请人名称
+        bytes32 inviterName;    // 邀请人名称
         uint256 inviteNum;      // 该用户邀请的人数
     }
 
-
-    
     struct UserAmount {
         uint256 totalKeys;          // 购买钥匙总量
         uint256 totalBet;           // 总投注量eth
@@ -34,4 +32,14 @@ contract MyFomoDataSet {
         uint256 inviteProfit;       // 邀请获益(eth)
     }
 
+    struct OperationAmount {
+        uint256 devFund;            // 开发基金
+        uint256 fees;               // 手续费
+    }
+
+    struct PrizePool {
+        uint256 total;              // 奖池总量
+        uint256 dividend;           // 分红总量
+        uint256 winerBonus;         // 最终赢家可获得奖金
+    }
 }
