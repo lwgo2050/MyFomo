@@ -8,10 +8,8 @@ import "./MyFomoDataSet.sol";
 import "./MyFomoEvents.sol";
 
 contract CoreBank {
-
     MyFomoDataSet.OperationAmount public _opeAmount;                   // 运营资金信息
     mapping(address => MyFomoDataSet.UserAmount) public _userAmounts;  // 用户钱包地址 => 资金信息
-
 }
 
 contract UserCenter is CoreBank {
@@ -64,6 +62,10 @@ contract UserCenter is CoreBank {
      * brief: 根据用户名获取用户信息
      * 参数： name 用户名(邀请码)
      * 返回： User 成功时返回表示用户的User对象
+     * address addr;           // 用户钱包地址
+     * bytes32 name;           // 用户名(邀请码)
+     * bytes32 inviterName;    // 邀请人名称
+     * uint256 inviteNum;      // 该用户邀请的人数
      */
     function getUserByName(string name) 
         public 
@@ -96,9 +98,29 @@ contract UserCenter is CoreBank {
      * brief: 根据用户名获取用户资金信息
      * 参数: name 用户名称
      * 返回：UserAmount 成功时返回表示该用户所有资金信息UserAmount的对象
+     * uint256 totalKeys;          // 购买钥匙总量
+     * uint256 totalBet;           // 总投注量eth
+     * uint256 lastKeys;           // 最后一次购买钥匙数量
+     * uint256 lastBet;            // 最后一次投注量
+     * uint256 totalBalance;       // 总余额(eth)
+     * uint256 withdrawAble;       // 可提现总量(eth)
+     * uint256 withdraw;           // 已提现数量(eth)
+     * uint256 totalProfit;        // 获益总量 （不算成本)
+     * uint256 inviteProfit;       // 邀请获益(eth)
      */
-    function getUserAmountByName(string name) public {
-
+    function getUserAmountByName(string name) 
+        public 
+        returns(uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256)
+    {
+        MyFomoDataSet.UserAmount memory amt = MyFomoDataSet.UserAmount(0,0,0,0,0,0,0,0,0);
+        if (userExist(name))
+            amt = _userAmounts[_nameAddr[name.nameFilter()]];
+        
+        return (
+            amt.totalKeys, amt.totalBet, amt.lastKeys, 
+            amt.lastBet, amt.totalBalance, amt.withdrawAble,
+            amt.withdraw, amt.totalProfit, amt.inviteProfit
+        );
     }
 
     /**
@@ -106,20 +128,19 @@ contract UserCenter is CoreBank {
      * 参数: add[option] 用户钱包地址, 不传时默认获取用户自身的资金信息
      * 返回：UserAmount 成功时返回表示该用户所有资金信息UserAmount的对象
      */
-    function getUserAmountByAddr(address addr) public {
-
-    }
-
-    /**
-     * brief: 用户购买钥匙
-     * 参数：rId 游戏轮数id
-     *      keyNum 钥匙数量
-     */
-    function buy(uint256 rId, uint256 keyNum) isHuman() 
-        public
-        payable 
+    function getUserAmountByAddr(address addr)
+        public 
+        returns(uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256)
     {
-
+        MyFomoDataSet.UserAmount memory amt = MyFomoDataSet.UserAmount(0,0,0,0,0,0,0,0,0);
+        if (_addrUids[addr] != 0)
+            amt = _userAmounts[addr];
+        
+        return (
+            amt.totalKeys, amt.totalBet, amt.lastKeys, 
+            amt.lastBet, amt.totalBalance, amt.withdrawAble,
+            amt.withdraw, amt.totalProfit, amt.inviteProfit
+        );
     }
 
     /**
