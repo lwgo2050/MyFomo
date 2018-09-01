@@ -14,21 +14,25 @@ contract MyFomo {
     using KeysCalcLong for uint256;
 
      bool public activated_ = false;
+     bool isMainRoundStop = true;
 
     uint256 constant private rndInit_ = 1 hours;                // round timer starts at this
     uint256 constant private rndInc_ = 30 seconds;              // every full key purchased adds this much to the timer
     uint256 constant private rndMax_ = 24 hours;                // max length a round timer can be
 
-    mapping (uint256 => MyFomoDataSet.Round) public main_round_;   // (rID => data) round data
-    mapping (uint256 => MyFomoDataSet.Round) public sub_round_;   // (rID => data) round data
+    mapping (uint256 => MyFomoDataSet.Round) public main_round_;   // (rID => data) round data，主游戏每轮游戏的信息
+    mapping (uint256 => MyFomoDataSet.Round) public sub_round_;   // (rID => data) round data 冲刺阶段每轮游戏的信息
+
+    // (pID => rID => data) player round data by player id & round id
+    // 主游戏每轮玩家的当前轮玩家信息，是用address还是palyername待定
+    mapping (uint256 => mapping (uint256 => MyFomoDataSet.UserAmount)) public mainPlayerRounds_;
+    // 冲刺阶段，每轮玩家的信息
+    mapping (uint256 => mapping (uint256 => MyFomoDataSet.UserAmount)) public subPlayerRounds_;
+
+    mapping(address => MyFomoDataSet.UserAmount) public user_bank_;
 
     uint256 public main_round_id_;    // round id number / total rounds that have happened
     uint256 public sub_round_id_;    // round id number / total rounds that have happened
-
-    mapping(address => MyFomoDataSet.UserAmount) public user_amounts_;
-    mapping(address => MyFomoDataSet.User) public address_user_map_;
-    // mapping(string => MyFomoDataSet.User) public name_user_map_;
-
 
 
     /**
@@ -188,6 +192,93 @@ contract MyFomo {
         returns(uint256, uint256, uint256, uint256, uint256)
     {
     }
+
+
+    /**
+     *   购买的核心逻辑
+     *   1.主流程购买-资金的分配逻辑
+     *   2.冲刺阶段流程购买-资金的分配逻辑
+     *
+    
+    
+     */
+    function buyCore()
+        private 
+        {
+        }
+
+    function buyMainRound() {
+
+    }
+
+    function buySubRound() {
+
+    }
+
+    //==============================================================================
+    //     _ _  _ _   | _  _ . _  .
+    //    (_(_)| (/_  |(_)(_||(_  . (this + tools + calcs + modules = our softwares engine)
+    //=====================_|=======================================================
+    /**
+     * @dev logic runs whenever a buy order is executed.  determines how to handle 
+     * incoming eth depending on if we are in an active round or not
+     * 
+     *  任何一个主流程游戏的购买都会走到这个逻辑，这个是主流程游戏的核心逻辑，主要包括一下几个方面
+     *  1.玩家购买钥匙以及资金统计
+     *  2.当前轮游戏最近池收益
+     *  3.当前轮游戏的奖池变动
+     */
+    function buyCore(uint256 _pID, uint256 _affID, uint256 _team, F3Ddatasets.EventReturns memory _eventData_)
+        private
+    {
+        // 设置当前轮
+        uint256 _rID = rID_;
+        
+        // 获取当前时间
+        uint256 _now = now;
+        
+        // 判断当前游戏是否在激活状态
+        // 如果主游戏已经激活的场景
+        if (_now > main_round_[_rID].strt && (_now <= main_round_[_rID].end || (_now > main_round_[_rID].end && main_round_[_rID].plyr == 0))) 
+        {
+            // call core 
+            core(_rID, _pID, msg.value, _affID, _team, _eventData_);
+        
+        // 主游戏未激活的场景
+        } else {
+            // check to see if end round needs to be ran
+            if (_now > round_[_rID].end && round_[_rID].ended == false) 
+            {
+                // end the round (distributes pot) & start new round
+			    round_[_rID].ended = true;
+                _eventData_ = endRound(_eventData_);
+                
+                // build event data
+                _eventData_.compressedData = _eventData_.compressedData + (_now * 1000000000000000000);
+                _eventData_.compressedIDs = _eventData_.compressedIDs + _pID;
+                
+                // fire buy and distribute event 
+                emit F3Devents.onBuyAndDistribute
+                (
+                    msg.sender, 
+                    plyr_[_pID].name, 
+                    msg.value, 
+                    _eventData_.compressedData, 
+                    _eventData_.compressedIDs, 
+                    _eventData_.winnerAddr, 
+                    _eventData_.winnerName, 
+                    _eventData_.amountWon, 
+                    _eventData_.newPot, 
+                    _eventData_.P3DAmount, 
+                    _eventData_.genAmount
+                );
+            }
+            
+            // put eth in players vault 
+            plyr_[_pID].gen = plyr_[_pID].gen.add(msg.value);
+        }
+    }
+  
 
    
    

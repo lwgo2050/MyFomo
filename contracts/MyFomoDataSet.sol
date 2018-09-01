@@ -3,6 +3,7 @@ import "./MyFomoEvents.sol";
 
 contract MyFomoDataSet {
     struct Round {
+        address plyr;   // 第一个买入用户
         uint256 strt;   // 游戏的开始时间
         uint256 end;    // 游戏结束时间
         bool ended;     // 当前轮游戏是否已经结束
@@ -23,15 +24,14 @@ contract MyFomoDataSet {
     
     struct UserAmount {
         uint256 totalKeys;          // 购买钥匙总量
-        uint256 totalBet;           // 总投注量
+        uint256 totalBet;           // 总投注量eth
         uint256 lastKeys;           // 最后一次购买钥匙数量
         uint256 lastBet;            // 最后一次投注量
-        uint256 totalBalance;       // 总余额
-        uint256 withdrawAble;       // 可提现总量
-        uint256 withdraw;           // 已提现数量
+        uint256 totalBalance;       // 总余额(eth)
+        uint256 withdrawAble;       // 可提现总量(eth)
+        uint256 withdraw;           // 已提现数量(eth)
         uint256 totalProfit;        // 获益总量 （不算成本)
-        uint256 inviteProfit;       // 邀请获益
-        mapping(uint256 => uint256) roundProfit;    // 每轮获利 （不算成本)
+        uint256 inviteProfit;       // 邀请获益(eth)
     }
 
 }
