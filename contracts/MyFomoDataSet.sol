@@ -3,14 +3,15 @@ import "./MyFomoEvents.sol";
 
 contract MyFomoDataSet {
     struct Round {
-        address plyr;   // 第一个买入用户
-        uint256 strt;   // 游戏的开始时间
-        uint256 end;    // 游戏结束时间
-        bool ended;     // 当前轮游戏是否已经结束
-        uint256 keys;   // 总钥匙数
-        uint256 eth;    //  总eth金额
-        uint256 pot;    // 可以分配给当轮所有玩家的奖池金额（eth）
-        uint256 mask;   // global mask
+        address plyr;       // 第一个买入用户
+        uint256 strt;       // 游戏的开始时间
+        uint256 end;        // 游戏结束时间
+        bool ended;         // 当前轮游戏是否已经结束
+        uint256 keys;       // 总钥匙数
+        uint256 eth;        //  总eth金额
+        uint256 pot;        // 可以分配给当轮所有玩家的奖池金额（eth）
+        uint256 dividend;   // 已经分红的金额（eth）
+        uint256 mask;       // global mask
     }
 
     struct User {

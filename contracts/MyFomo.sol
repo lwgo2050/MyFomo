@@ -20,6 +20,15 @@ contract MyFomo {
     uint256 constant private rndInc_ = 30 seconds;              // every full key purchased adds this much to the timer
     uint256 constant private rndMax_ = 24 hours;                // max length a round timer can be
 
+    // 每一个钥匙购买者eth在整个奖池中的分配规则
+    uint256 constant private main_round_pot_ration = 43;           // 43%进入总奖池
+    uint256 constant private main_round_dividend_ration = 43;       // 43%用于分配给钥匙持有者
+    uint256 constant private main_round_inviter_ration = 10;        // 10用来分配给推荐人,如果没有推荐人则分配给团队开发者
+    uint256 constant private main_round_developer_ration = 3;       // 3%用来分配给
+    uint256 constant private main_round_fee_ration = 1;             // 1% 手续费
+
+
+
     mapping (uint256 => MyFomoDataSet.Round) public main_round_;   // (rID => data) round data，主游戏每轮游戏的信息
     mapping (uint256 => MyFomoDataSet.Round) public sub_round_;   // (rID => data) round data 冲刺阶段每轮游戏的信息
 
@@ -63,11 +72,20 @@ contract MyFomo {
         _;    
     }
 
-    function buy(uint256 rId, uint256 keyNum) isHuman() 
+    
+    bool isSubStart = false;
+    function buy(uint256 rId, uint256 keyNum) 
         public
         payable
+        isHuman()
+        isActivated()
     {
-        
+        if (!isSubStart) {
+            buyMainRound(main_round_id_);
+        }
+        else  {
+            buySubRound();
+        }
     }
 
     function withdraw(uint256 amount) isHuman()
@@ -127,7 +145,17 @@ contract MyFomo {
          view 
          returns(uint256) 
     { 
-        return 0;
+               // setup local rID
+        uint256 _rID = main_round_id_;
+        
+        // grab time
+        uint256 _now = now;
+        
+        // are we in a round?
+        if (_now > round_[_rID].strt && (_now <= main_round_[_rID].end || (_now > main_round_[_rID].end && main_round_[_rID].plyr == 0)))
+            return ( (round_[_rID].keys.add(1000000000000000000)).ethRec(1000000000000000000) );
+        else // rounds over.  need price for new round
+            return ( 75000000000000 ); // 这个初始价格和钥匙的增长机制 需要产品来定义
     }
 
     /**
@@ -140,6 +168,16 @@ contract MyFomo {
         view
         returns(uint256)
     {
+        // setup local rID
+        uint256 _rID = main_round_id_;
+        
+        // grab time
+        uint256 _now = now;
+        
+        if (_now < main_round_[_rID].end)
+            return( (main_round_[_rID].end).sub(_now));
+        else
+            return(0);
     }
 
       
@@ -157,8 +195,21 @@ contract MyFomo {
     function getCurrentMainRoundInfo()
         public
         view
-        returns(uint256, uint256, uint256, uint256, uint256)
+        returns(uint256, uint256, uint256, uint256, uint256,uint256, uint256)
     {
+         // setup local rID
+        uint256 _rID = main_round_id_;
+        
+        return
+        (
+            _rID,                                //1
+            main_round_[_rID].strt,              //2
+            main_round_[_rID].end,               //3
+            main_round_[_rID].keys,              //4
+            main_round_[_rID].eth,               //5
+            main_round_[_rID].pot,               //6
+            main_round_[_rID].dividend,          //7
+        );
     }
 
     /**
@@ -188,8 +239,21 @@ contract MyFomo {
     function getCurrentSubRoundInfo()
         public
         view
-        returns(uint256, uint256, uint256, uint256, uint256)
+        returns(uint256, uint256, uint256, uint256, uint256, uint256, uint256)
     {
+                 // setup local rID
+        uint256 _rID = sub_round_id_;
+        
+        return
+        (
+            _rID,                               //1
+            sub_round_[_rID].strt,              //2
+            sub_round_[_rID].end,               //3
+            sub_round_[_rID].keys,              //4
+            sub_round_[_rID].eth,               //5
+            sub_round_[_rID].pot,               //6
+            sub_round_[_rID].dividend,          //7
+        );
     }
 
 
@@ -198,20 +262,28 @@ contract MyFomo {
      *   1.主流程购买-资金的分配逻辑
      *   2.冲刺阶段流程购买-资金的分配逻辑
      *
-    
-    
      */
     function buyCore()
         private 
+    {
+          // 设置当前轮
+        uint256 _rID = rID_;
+        
+        // 获取当前时间
+        uint256 _now = now;
+
+        // 判断当前游戏是否在激活状态
+        // 如果主游戏已经激活的场景
+        if (_now > main_round_[_rID].strt && (_now <= main_round_[_rID].end || (_now > main_round_[_rID].end && main_round_[_rID].plyr == 0))) 
         {
+            // call core 
+          
+        
+        // 主游戏未激活的场景
+        } else {
+            }
+            
         }
-
-    function buyMainRound() {
-
-    }
-
-    function buySubRound() {
-
     }
 
     //==============================================================================
@@ -228,59 +300,97 @@ contract MyFomo {
      *  3.当前轮游戏的奖池变动
      *
      */
-    function buyCore(uint256 _pID, uint256 _affID, uint256 _team, F3Ddatasets.EventReturns memory _eventData_)
+    function buyMainRound(uint256 _rID, uint256 _keys, uint256 _eth) 
+        private 
+    {
+        address _player = msg.sender; // 玩家地址
+        uint256 _eth = msg.value; // 玩家投入的eth
+                                  // 是否要根据eth 换算成keys
+
+        // 1.更新玩家本轮游戏的投入信息
+        mainPlayerRounds_[_player][_rID].totalKeys = _keys.add(mainPlayerRounds_[_player][_rID].totalKeys); // 用户本轮总买入keys
+        mainPlayerRounds_[_player][_rID].totalBet = _eth.add(mainPlayerRounds_[_player][_rID].totalBet); // 用户本轮总花费eth
+        
+        // 更新本局的资金池总投入信息
+        main_round_[_rID].keys = _keys.add(round_[_rID].keys);
+        main_round_[_rID].eth = _eth.add(round_[_rID].eth);
+
+        // 计算本次对之前购买用户的一个分成-分成计算
+        // 43%进入总奖池 
+        main_round_[_rID].pot = (_eth.mul(main_round_pot_ration)/100).add(main_round_[_rID].pot);
+        // 43% 进行分红 -遍历每一个用户占有所有的用户的持仓比例 mapping遍历有点复杂
+        
+        // 10% 推荐人
+
+        // 3% 团队开发资金
+        // 1% 手续费
+
+        // 更新奖池的时间信息
+        updateTimer(_keys, _rID);
+
+        // 更新钥匙价格
+    }
+
+    function buySubRound(uint256 _rID, uint256 _keys, uint256 _eth)
+        private 
+    {
+
+    }
+
+    /**
+     * @dev updates round timer based on number of whole keys bought.
+     */
+    function updateTimer(uint256 _keys, uint256 _rID)
         private
     {
-        // 设置当前轮
-        uint256 _rID = rID_;
-        
-        // 获取当前时间
+        // grab time
         uint256 _now = now;
         
-        // 判断当前游戏是否在激活状态
-        // 如果主游戏已经激活的场景
-        if (_now > main_round_[_rID].strt && (_now <= main_round_[_rID].end || (_now > main_round_[_rID].end && main_round_[_rID].plyr == 0))) 
-        {
-            // call core 
-            core(_rID, _pID, msg.value, _affID, _team, _eventData_);
+        // calculate time based on number of keys bought
+        uint256 _newTime;
+        if (_now > main_round_[_rID].end && main_round_[_rID].plyr == 0)
+            _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(_now);
+        else
+            _newTime = (((_keys) / (1000000000000000000)).mul(rndInc_)).add(main_round_[_rID].end);
         
-        // 主游戏未激活的场景
-        } else {
-            // check to see if end round needs to be ran
-            if (_now > round_[_rID].end && round_[_rID].ended == false) 
-            {
-                // end the round (distributes pot) & start new round
-			    round_[_rID].ended = true;
-                _eventData_ = endRound(_eventData_);
-                
-                // build event data
-                _eventData_.compressedData = _eventData_.compressedData + (_now * 1000000000000000000);
-                _eventData_.compressedIDs = _eventData_.compressedIDs + _pID;
-                
-                // fire buy and distribute event 
-                emit F3Devents.onBuyAndDistribute
-                (
-                    msg.sender, 
-                    plyr_[_pID].name, 
-                    msg.value, 
-                    _eventData_.compressedData, 
-                    _eventData_.compressedIDs, 
-                    _eventData_.winnerAddr, 
-                    _eventData_.winnerName, 
-                    _eventData_.amountWon, 
-                    _eventData_.newPot, 
-                    _eventData_.P3DAmount, 
-                    _eventData_.genAmount
-                );
-            }
-            
-            // put eth in players vault 
-            plyr_[_pID].gen = plyr_[_pID].gen.add(msg.value);
-        }
+        // compare to max and set new end time
+        if (_newTime < (rndMax_).add(_now))
+            main_round_[_rID].end = _newTime;
+        else
+            main_round_[_rID].end = main_round_.add(_now);
     }
-  
 
-   
-   
+    //==============================================================================
+//    (~ _  _    _._|_    .
+//    _)(/_(_|_|| | | \/  .
+//====================/=========================================================
+    /** upon contract deploy, it will be deactivated.  this is a one time
+     * use function that will activate the contract.  we do this so devs 
+     * have time to set things up on the web end                            **/
+    bool public activated_ = false;
+    function activate()
+        public
+    {
+        // only team just can activate 
+        require(
+            msg.sender == 0x18E90Fc6F70344f53EBd4f6070bf6Aa23e2D748C ||
+            msg.sender == 0x8b4DA1827932D71759687f925D17F81Fc94e3A9D ||
+            msg.sender == 0x8e0d985f3Ec1857BEc39B76aAabDEa6B31B67d53 ||
+            msg.sender == 0x7ac74Fcc1a71b106F12c55ee8F802C9F672Ce40C ||
+			msg.sender == 0xF39e044e1AB204460e06E87c6dca2c6319fC69E3,
+            "only team just can activate"
+        );
+        
+        // can only be ran once
+        require(activated_ == false, "myfomo already activated");
+        
+        // activate the contract 
+        activated_ = true;
+        
+        // lets start first round
+		main_round_id_ = 1;
+        main_round_id_[1].strt = now + rndInit_;
+        main_round_id_[1].end = now + rndInit_ + rndMax_;
+    }
 
 }
