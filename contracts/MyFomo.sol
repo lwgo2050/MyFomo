@@ -25,11 +25,9 @@ contract MyFomo {
 
     // (pID => rID => data) player round data by player id & round id
     // 主游戏每轮玩家的当前轮玩家信息，是用address还是palyername待定
-    mapping (uint256 => mapping (uint256 => MyFomoDataSet.UserAmount)) public mainPlayerRounds_;
+    mapping (uint256 => mapping (uint256 => MyFomoDataSet.PlayerAmount)) public mainPlayerRounds_;
     // 冲刺阶段，每轮玩家的信息
-    mapping (uint256 => mapping (uint256 => MyFomoDataSet.UserAmount)) public subPlayerRounds_;
-
-    mapping(address => MyFomoDataSet.UserAmount) public user_bank_;
+    mapping (uint256 => mapping (uint256 => MyFomoDataSet.PlayerAmount)) public subPlayerRounds_;
 
     uint256 public main_round_id_;    // round id number / total rounds that have happened
     uint256 public sub_round_id_;    // round id number / total rounds that have happened
@@ -173,6 +171,7 @@ contract MyFomo {
         view
         returns(uint256)
     {
+        emit MyFomoEvent.onNewUser();
     }
     
     /**
@@ -227,6 +226,7 @@ contract MyFomo {
      *  1.玩家购买钥匙以及资金统计
      *  2.当前轮游戏最近池收益
      *  3.当前轮游戏的奖池变动
+     *
      */
     function buyCore(uint256 _pID, uint256 _affID, uint256 _team, F3Ddatasets.EventReturns memory _eventData_)
         private

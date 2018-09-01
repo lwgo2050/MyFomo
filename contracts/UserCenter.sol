@@ -11,7 +11,6 @@ contract CoreBank {
 
     MyFomoDataSet.OperationAmount public _opeAmount;                   // 运营资金信息
     mapping(address => MyFomoDataSet.UserAmount) public _userAmounts;  // 用户钱包地址 => 资金信息
-    mapping(uint32 => MyFomoDataSet.PrizePool) public _prizePool;      // 游戏roundId => 奖池信息
 
 }
 
@@ -22,7 +21,7 @@ contract UserCenter is CoreBank {
     uint256 public _uid; // 用户id 从1开始
     mapping(uint256 => MyFomoDataSet.User) public _users; // user id => user
     mapping(address => uint256) public _addrUids; // user address => user id
-    mapping(bytes32 => address) public _nameAddr; // user name => user id
+    mapping(bytes32 => address) public _nameAddr; // user name => user address
     mapping(address => uint256) public _admins; // admin users
     
     constructor()

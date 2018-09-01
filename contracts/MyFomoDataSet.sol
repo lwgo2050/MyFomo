@@ -9,7 +9,7 @@ contract MyFomoDataSet {
         bool ended;     // 当前轮游戏是否已经结束
         uint256 keys;   // 总钥匙数
         uint256 eth;    //  总eth金额
-        uint256 pot;    // 当前可以供最终玩家的信息
+        uint256 pot;    // 可以分配给当轮所有玩家的奖池金额（eth）
         uint256 mask;   // global mask
     }
 
@@ -32,14 +32,17 @@ contract MyFomoDataSet {
         uint256 inviteProfit;       // 邀请获益(eth)
     }
 
+    struct PlayerAmount {
+        uint256 totalKeys;          // 购买钥匙总量
+        uint256 totalBet;           // 总投注量eth
+        uint256 totalBalance;       // 总余额(eth)
+        uint256 dividend;           // 分红奖励
+        uint256 withdrawAble;       // 可提现总量(eth)
+        uint256 withdraw;           // 已提现数量(eth)
+    }
+
     struct OperationAmount {
         uint256 devFund;            // 开发基金
         uint256 fees;               // 手续费
-    }
-
-    struct PrizePool {
-        uint256 total;              // 奖池总量
-        uint256 dividend;           // 分红总量
-        uint256 winerBonus;         // 最终赢家可获得奖金
     }
 }
