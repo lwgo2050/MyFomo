@@ -8,13 +8,15 @@ import "./library/NameFilter.sol";
 import "./library/UintCompressor.sol";
 import "./library/KeysCalcLong.sol";
 
+import "./UserCenter.sol";
+
 contract MyFomo {
     using SafeMath for *;
     using NameFilter for string;
     using KeysCalcLong for uint256;
 
-     bool public activated_ = false;
-     bool isMainRoundStop = true;
+    bool public activated_ = false;
+    bool isMainRoundStop = true;
 
     uint256 constant private rndInit_ = 1 hours;                // round timer starts at this
     uint256 constant private rndInc_ = 30 seconds;              // every full key purchased adds this much to the timer
@@ -27,7 +29,12 @@ contract MyFomo {
     uint256 constant private main_round_developer_ration = 3;       // 3%用来分配给
     uint256 constant private main_round_fee_ration = 1;             // 1% 手续费
 
-
+    // 每一个钥匙购买者eth在整个奖池中的分配规则
+    uint256 constant private sub_round_pot_ration = 43;           // 43%进入总奖池
+    uint256 constant private sub_round_dividend_ration = 43;       // 43%用于分配给钥匙持有者
+    uint256 constant private sub_round_inviter_ration = 10;        // 10用来分配给推荐人,如果没有推荐人则分配给团队开发者
+    uint256 constant private sub_round_developer_ration = 3;       // 3%用来分配给
+    uint256 constant private sub_round_fee_ration = 1;             // 1% 手续费
 
     mapping (uint256 => MyFomoDataSet.Round) public main_round_;   // (rID => data) round data，主游戏每轮游戏的信息
     mapping (uint256 => MyFomoDataSet.Round) public sub_round_;   // (rID => data) round data 冲刺阶段每轮游戏的信息
@@ -40,6 +47,8 @@ contract MyFomo {
 
     uint256 public main_round_id_;    // round id number / total rounds that have happened
     uint256 public sub_round_id_;    // round id number / total rounds that have happened
+
+    UserCenter public uct_;
 
 
     /**
@@ -334,7 +343,57 @@ contract MyFomo {
     function buySubRound(uint256 _rID, uint256 _keys, uint256 _eth)
         private 
     {
+        address _player = msg.sender; // 玩家地址
+        uint256 _eth = msg.value; // 玩家投入的eth
+                                  // 是否要根据eth 换算成keys
 
+        // 1.更新玩家本轮游戏的投入信息
+        subPlayerRounds_[_player][_rID].totalKeys = _keys.add(subPlayerRounds_[_player][_rID].totalKeys); // 用户本轮总买入keys
+        subPlayerRounds_[_player][_rID].totalBet = _eth.add(subPlayerRounds_[_player][_rID].totalBet); // 用户本轮总花费eth
+        
+        // 更新本局的资金池总投入信息
+        sub_round_[_rID].keys = _keys.add(sub_round_[_rID].keys);
+        sub_round_[_rID].eth = _eth.add(sub_round_[_rID].eth);
+
+        // 注册用户
+        uct_.registWithAddr(_player);
+
+        // 计算本次对之前购买用户的一个分成-分成计算
+        // 43%进入总奖池 
+        sub_round_[_rID].pot = (_eth.mul(sub_round_pot_ration)/100).add(sub_round_[_rID].pot);
+        // 43% 进行分红 -遍历每一个用户占有所有的用户的持仓比例 mapping遍历有点复杂
+        uint256 _dividend = _eth.mul(sub_round_dividend_ration)/100;
+        sub_round_[_rID].dividend = sub_round_[_rID].dividend.add(_dividend);
+        uint256 _dividend_per_key = _dividend.div(sub_round_[_rID].keys);
+        subPlayerRounds_[_player][_rID].mask = subPlayerRounds_[_player][_rID].mask.add(sub_round_[rID].mask.mul(_keys));
+        sub_round_[_rID].mask = _dividend_per_key.add(sub_round_[_rID].mask);
+        // 10% 推荐人, 跟新推荐人资金信息
+        bytes32 _inviter_name = uct_.getUserByAddr(_player).inviterName;
+        uint256 _profit = _eth.mul(sub_round_inviter_ration)/100;
+        if (inviter != "") {
+            address _inviter = uct_._nameAddr[_inviter_name];
+            uct_._users[uct_._addrUids[_inviter]].inviteNum = uct_._users[uct_._addrUids[_inviter]].inviteNum.add(1);
+            uct_._userAmounts[_inviter].inviteProfit = uct_._userAmounts[_inviter].inviteProfit.add(_profit); // 邀请奖励
+            uct_._userAmounts[_inviter].withdrawAble = uct_._userAmounts[_inviter].withdrawAble.add(_profit); // 可提现
+            uct_._userAmounts[_inviter].totalBalance = uct_._userAmounts[_inviter].totalBalance.add(_profit); // 总余额
+        } else {
+            uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(profit); // 没有推荐人则进入开发基金
+        }
+        // 3% 团队开发资金
+        uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
+        // 1% 手续费
+        uct_._opeAmount.fees = uct_._opeAmount.fees.add(_eth.mul(sub_round_fee_ration)/100);
+
+        // 更新个人资金信息（UserAmount）
+        uct_._userAmounts[_player].totalKeys = uct_._userAmounts[_player].totalKeys.add(_keys); // 总令牌
+        uct_._userAmounts[_player].totalBet = uct_._userAmounts[_player].totalBet.add(_eth);    // 总投入eth
+        uct_._userAmounts[_player].lastKeys = uct_._userAmounts[_player].lastKeys = _keys;      // 最新一次购买的令牌
+        uct_._userAmounts[_player].lastBet = uct_._userAmounts[_player].lastBet = _eth;         // 最新一次投入eth量
+
+        // 更新奖池的时间信息
+        updateTimer(_keys, _rID);
+
+        // 更新钥匙价格
     }
 
     /**
