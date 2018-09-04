@@ -2,6 +2,14 @@ pragma solidity ^0.4.23;
 import "./MyFomoEvents.sol";
 
 contract MyFomoDataSet {
+    struct EventReturns {
+        address winnerAddr;         // winner address
+        bytes32 winnerName;         // winner name
+        uint256 amountWon;          // amount won
+        uint256 newPot;             // amount in new pot
+        uint256 potAmount;          // amount added to pot
+    }
+
     struct Round {
         address plyr;       // 第一个买入用户
         uint256 strt;       // 游戏的开始时间

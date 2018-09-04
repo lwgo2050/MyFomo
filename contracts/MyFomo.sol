@@ -97,10 +97,64 @@ contract MyFomo {
         }
     }
 
-    function withdraw(uint256 amount) isHuman()
+    function withdraw(uint256 amount) 
         public
         payable
+        isHuman()
+        isActivated()
     {
+        // 获取主游戏的轮数
+        uint256 _rID = main_round_id_;  // 主游戏的ID
+        
+        // 获取当前时间
+        uint256 _now = now;
+        
+        // 玩家地址
+        address player = msg.sender;
+        
+        // setup temp var for player eth
+        uint256 _eth;
+        
+        // 检查当前游戏是否已经结束
+        if (_now > main_round_[_rID].end && main_round_[_rID].ended == false && main_round_[_rID].plyr != 0)
+        {
+            // 该轮游戏已经结束，终止游戏
+            // 设置返回event数据
+            MyFomoDataSet.EventReturns memory _eventData_;
+            
+			main_round_[_rID].ended = true;
+            _eventData_ = endMainRound(_eventData_);
+            
+			// 获取可提现的金额
+            _eth = withdrawEarnings(player); // TODO to be implements
+            
+            // 提现
+            if (_eth > 0)
+                player.transfer(_eth);    
+            
+            emit MyFomoEvents.onWithdrawAndDistribute
+            (
+                msg.sender, 
+                uct_.getUserByAddr(_player).name, 
+                _eth, 
+                _eventData_.winnerAddr, 
+                _eventData_.winnerName, 
+                _eventData_.amountWon, 
+                _eventData_.newPot
+            );
+            
+        // in any other situation
+        } else {
+            // get their earnings
+            _eth = withdrawEarnings(_pID);
+            
+            // gib moni
+            if (_eth > 0)
+                player.transfer(_eth);
+            
+            // fire withdraw event
+            emit F3Devents.onWithdraw( msg.sender, uct_.getUserByAddr(_player).name, _eth, _now);
+        }
         
     }
     
@@ -327,13 +381,35 @@ contract MyFomo {
         // 计算本次对之前购买用户的一个分成-分成计算
         // 43%进入总奖池 
         main_round_[_rID].pot = (_eth.mul(main_round_pot_ration)/100).add(main_round_[_rID].pot);
-        // 43% 进行分红 -遍历每一个用户占有所有的用户的持仓比例 mapping遍历有点复杂
-        
-        // 10% 推荐人
 
+        // 43% 进行分红
+        uint256 _dividend = _eth.mul(main_round_dividend_ration)/100; // 进入分红奖池的比例
+        main_round_[_rID].dividend = main_round_[_rID].dividend.add(_dividend);
+        uint256 _dividend_per_key = _dividend.div(main_round_[_rID].keys); // 计算每个key的股息
+        mainPlayerRounds_[_player][_rID].mask = mainPlayerRounds_[_player][_rID].mask.add(main_round_[rID].mask.mul(_keys)); // 用户每次买入后计算应当扣除的部分
+        // 10% 推荐人, 跟新推荐人资金信息
+        bytes32 _inviter_name = uct_.getUserByAddr(_player).inviterName;
+        uint256 _profit = _eth.mul(sub_round_inviter_ration)/100;
+        if (inviter != "") {
+            address _inviter = uct_._nameAddr[_inviter_name];
+            uct_._users[uct_._addrUids[_inviter]].inviteNum = uct_._users[uct_._addrUids[_inviter]].inviteNum.add(1);
+            uct_._userAmounts[_inviter].inviteProfit = uct_._userAmounts[_inviter].inviteProfit.add(_profit); // 邀请奖励
+            uct_._userAmounts[_inviter].withdrawAble = uct_._userAmounts[_inviter].withdrawAble.add(_profit); // 可提现
+            uct_._userAmounts[_inviter].totalBalance = uct_._userAmounts[_inviter].totalBalance.add(_profit); // 总余额
+        } else {
+            uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(profit); // 没有推荐人则进入开发基金
+        }
         // 3% 团队开发资金
+        uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
         // 1% 手续费
+        uct_._opeAmount.fees = uct_._opeAmount.fees.add(_eth.mul(sub_round_fee_ration)/100);
 
+        // 更新个人资金信息（UserAmount）
+        uct_._userAmounts[_player].totalKeys = uct_._userAmounts[_player].totalKeys.add(_keys); // 总令牌
+        uct_._userAmounts[_player].totalBet = uct_._userAmounts[_player].totalBet.add(_eth);    // 总投入eth
+        uct_._userAmounts[_player].lastKeys = uct_._userAmounts[_player].lastKeys = _keys;      // 最新一次购买的令牌
+        uct_._userAmounts[_player].lastBet = uct_._userAmounts[_player].lastBet = _eth;         // 最新一次投入eth量
+      
         // 更新奖池的时间信息
         updateTimer(_keys, _rID);
 
@@ -417,6 +493,78 @@ contract MyFomo {
             main_round_[_rID].end = _newTime;
         else
             main_round_[_rID].end = main_round_.add(_now);
+    }
+
+     /**
+     * @dev 结束一轮主游戏，分配奖金给最终玩家
+     */
+    function endMainRound(MyFomoDataSet.EventReturns memory _eventData_)
+        private
+        returns (MyFomoDataSet.EventReturns)
+    {
+        // 设置主游戏的ID
+        uint256 _rID = main_round_id_;
+        
+        // 获取当前轮最后一位买入用户
+        // TODO: by Leon， 每次买入都需要更新plyr
+        uint256 _winAddress = main_round_[_rID].plyr;
+        bytes32 _winName = uct_.getUserByAddr(_player).name;
+        
+        // 获取可以分给最终用户的奖池金额
+        uint256 _pot = main_round_[_rID].pot;
+        
+        //计算游戏奖池分配 
+        // 2%团队开发资金 48%最终赢家 20%下一轮游戏，30%钥匙持有者（这个时本轮的持有者呢 还是最终的持有者）
+        uint256 _win = (_pot.mul(48)) / 100; // 最终赢家
+        uint256 _dev = (_pot.mul(2)) / 100; // 团队开发基金
+        uint256 _nexPot = (_pot.mul(20)/100); /// 下一轮游戏
+        uint256 _keyPlr = (_pot.mul(30)/100); /// 钥匙持有分红
+        
+        // 用户每个key新增股息
+        uint256 _ppt = _keyPlr / (main_round_[_rID].keys);
+        
+        // 设置最终赢家增加金额
+        uct_._userAmounts[_winAddress].totalBalance = uct_._userAmounts[_playe_winAddressr].totalBalance.add(_win); // 增加总余额
+        uct_._userAmounts[_winAddress].withdrawAble = uct_._userAmounts[_playe_winAddressr].withdrawAble.add(_win); // 增加可提现总量
+
+        // 团队开发基金
+        uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_dev);
+        
+        // 分配给key的持有者
+        main_round_[_rID].mask = _ppt.add(main_round_[_rID].mask);
+        
+        // prepare event data;
+        _eventData_.winnerAddr = _winAddress;
+        _eventData_.winnerName = _winName;
+        _eventData_.amountWon = _win;
+        _eventData_.newPot = _nexPot;
+        
+        // start next round
+        rID_++;
+        _rID++;
+        main_round_[_rID].strt = now;
+        main_round_[_rID].end = now.add(rndInit_);
+        main_round_[_rID].pot = _nexPot;
+        
+        return(_eventData_);
+    }
+
+
+    function withdrawEarnings(uint256 _pID)
+        private
+        returns(uint256)
+    {
+        
+        // // from vaults 
+        // uint256 _earnings = (plyr_[_pID].win).add(plyr_[_pID].gen).add(plyr_[_pID].aff);
+        // if (_earnings > 0)
+        // {
+        //     plyr_[_pID].win = 0;
+        //     plyr_[_pID].gen = 0;
+        //     plyr_[_pID].aff = 0;
+        // }
+
+        // return(_earnings);
     }
 
     //==============================================================================

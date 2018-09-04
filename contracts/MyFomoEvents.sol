@@ -61,4 +61,25 @@ contract MyFomoEvents {
         uint256 timeStamp               // 时间戳
     );
 
+    // fired whenever theres a withdraw
+    event onWithdraw
+    (
+        address playerAddress,
+        bytes32 playerName,
+        uint256 ethOut,
+        uint256 timeStamp
+    );
+
+     // fired whenever a withdraw forces end round to be ran
+    event onWithdrawAndDistribute
+    (
+        address playerAddress,
+        bytes32 playerName,
+        uint256 ethOut,
+        address winnerAddr,
+        bytes32 winnerName,
+        uint256 amountWon,
+        uint256 newPot
+    );
+
 }
