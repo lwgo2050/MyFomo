@@ -16,11 +16,14 @@ contract MyFomo {
     using KeysCalcLong for uint256;
 
     bool public activated_ = false;
-    bool isSubStart = false;
+    bool isMainRoundStop = true;
+    bool isSubRoundStart = false;
 
     uint256 constant private rndInit_ = 1 hours;                // round timer starts at this
     uint256 constant private rndInc_ = 30 seconds;              // every full key purchased adds this much to the timer
     uint256 constant private rndMax_ = 24 hours;                // max length a round timer can be
+    uint256 constant private subRndDesc_ = 1 seconds;       
+    uint256 constant private subRndMax_ = 300 seconds;       
 
     // 每一个钥匙购买者eth在整个奖池中的分配规则
     uint256 constant private main_round_pot_ration = 43;           // 43%进入总奖池
@@ -30,9 +33,9 @@ contract MyFomo {
     uint256 constant private main_round_fee_ration = 1;             // 1% 手续费
 
     // 每一个钥匙购买者eth在整个奖池中的分配规则
-    uint256 constant private sub_round_pot_ration = 43;           // 43%进入总奖池
-    uint256 constant private sub_round_dividend_ration = 43;       // 43%用于分配给钥匙持有者
-    uint256 constant private sub_round_inviter_ration = 10;        // 10用来分配给推荐人,如果没有推荐人则分配给团队开发者
+    uint256 constant private sub_round_pot_ration = 56;           // 56%进入总奖池
+    // uint256 constant private sub_round_dividend_ration = 23;       // 43%用于分配给钥匙持有者
+    uint256 constant private sub_round_subpot_ration = 40;        // 40用来分配给推荐人,如果没有推荐人则分配给团队开发者
     uint256 constant private sub_round_developer_ration = 3;       // 3%用来分配给
     uint256 constant private sub_round_fee_ration = 1;             // 1% 手续费
 
@@ -156,14 +159,26 @@ contract MyFomo {
         public
         payable
     {
-        
+        checkStopSubRnd();
+        uct_.registWithName(name);
     }
 
+    /**
+     * brief: 根据用户名获取用户信息
+     * 参数： name 用户名(邀请码)
+     * 返回： User 成功时返回表示用户的User对象
+     * address addr;           // 用户钱包地址
+     * bytes32 name;           // 用户名(邀请码)
+     * bytes32 inviterName;    // 邀请人名称
+     * uint256 inviteNum;      // 该用户邀请的人数
+     */
     function getUserByName(string name) 
         public
         view
         returns(address,bytes32,bytes32,uint256)
     {
+        checkStopSubRnd();
+        return uct_.getUserByName(name);
     }
 
     function getUserByAddr(address addr)
@@ -171,15 +186,34 @@ contract MyFomo {
         view
         returns(address,bytes32,bytes32,uint256)
     {
-
+        checkStopSubRnd();
+        return uct_.getUsrByAddr(addr);
     }
 
+    /**
+     * brief: 根据用户名获取用户资金信息
+     * 参数: name 用户名称
+     * 返回：UserAmount 成功时返回表示该用户所有资金信息UserAmount的对象
+     * uint256 totalKeys;          // 购买钥匙总量
+     * uint256 totalBet;           // 总投注量eth
+     * uint256 lastKeys;           // 最后一次购买钥匙数量
+     * uint256 lastBet;            // 最后一次投注量
+     * uint256 totalBalance;       // 总余额(eth)
+     * uint256 withdrawAble;       // 可提现总量(eth)
+     * uint256 withdraw;           // 已提现数量(eth)
+     * uint256 totalProfit;        // 获益总量 （不算成本)
+     * uint256 inviteProfit;       // 邀请获益(eth)
+     */
     function getUserAmountByName(string name) 
         public
         view
         returns(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
     { 
-
+        checkStopSubRnd();
+        MyFomoDataSet.UserAmount memory amt = MyFomoDataSet.UserAmount(0,0,0,0,0,0,0,0,0);
+        if (uct_.userExist(name))
+            amt = uct_._userAmounts[uct_._nameAddr[name.nameFilter()]];
+        
     }
 
     function getUserAmountByAddr(address addr)
@@ -187,6 +221,7 @@ contract MyFomo {
         view
         returns(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
     { 
+        checkStopSubRnd();
     }
 
 
@@ -279,7 +314,8 @@ contract MyFomo {
         view
         returns(uint256)
     {
-        emit MyFomoEvents.onNewUser();
+        checkStopSubRnd();
+        return sub_round_[sub_round_id_].end.sub(sub_round_[sub_round_id_].strt);
     }
     
     /**
@@ -334,10 +370,11 @@ contract MyFomo {
         if (_now > main_round_[_rID].strt && (_now <= main_round_[_rID].end || (_now > main_round_[_rID].end && main_round_[_rID].plyr == 0))) 
         {
             // 如果冲刺阶段的游戏没有开启，则买主轮游戏
-            if (!isSubStart) {
+            if (!isSubRoundStart) {
                 buyMainRound(_rID,msg.value);
             } else {
-
+                uint256 _keys = 0;
+                buySubRound(sub_round_id_, _keys);
             }
         
         // 主游戏未激活的场景
@@ -388,11 +425,11 @@ contract MyFomo {
         // 43% 进行分红
         uint256 _dividend = _eth.mul(main_round_dividend_ration)/100; // 进入分红奖池的比例
         main_round_[_rID].dividend = main_round_[_rID].dividend.add(_dividend);
-        uint256 _dividend_per_key = _dividend.div(main_round_[_rID].keys); // 计算每个key的股息
+        // uint256 _dividend_per_key = _dividend.div(main_round_[_rID].keys); // 计算每个key的股息
         mainPlayerRounds_[_player][_rID].mask = mainPlayerRounds_[_player][_rID].mask.add(main_round_[_rID].mask.mul(_keys)); // 用户每次买入后计算应当扣除的部分
         // 10% 推荐人, 跟新推荐人资金信息
         bytes32 _inviter_name = uct_.getUserByAddr(_player).inviterName;
-        uint256 _profit = _eth.mul(sub_round_inviter_ration)/100;
+        uint256 _profit = _eth.mul(main_round_inviter_ration)/100;
         if (_inviter_name != "") {
             address _inviter = uct_._nameAddr[_inviter_name];
             uct_._users[uct_._addrUids[_inviter]].inviteNum = uct_._users[uct_._addrUids[_inviter]].inviteNum.add(1);
@@ -414,60 +451,97 @@ contract MyFomo {
         uct_._userAmounts[_player].lastBet = uct_._userAmounts[_player].lastBet = _eth;         // 最新一次投入eth量
     }
 
-    function buySubRound(uint256 _rID, uint256 _keys, uint256 _eth)
+    function buySubRound(uint256 _rID, uint256 _keys)
         private 
     {
         address _player = msg.sender; // 玩家地址
-        // uint256 _eth = msg.value; // 玩家投入的eth
+        uint256 _eth = msg.value; // 玩家投入的eth
+        uint256 _now = now;
                                   // 是否要根据eth 换算成keys
+        // 冲刺游戏处理游戏中
+        if (_now > sub_round_[_rID].strt && (_now <= sub_round_[_rID].end)) 
+        {
+            // 1.更新玩家本轮游戏的投入信息
+            subPlayerRounds_[_player][_rID].totalKeys = _keys.add(subPlayerRounds_[_player][_rID].totalKeys); // 用户本轮总买入keys
+            subPlayerRounds_[_player][_rID].totalBet = _eth.add(subPlayerRounds_[_player][_rID].totalBet); // 用户本轮总花费eth
+            
+            // 更新本局的资金池总投入信息
+            sub_round_[_rID].keys = _keys.add(sub_round_[_rID].keys);
+            sub_round_[_rID].eth = _eth.add(sub_round_[_rID].eth);
 
-        // 1.更新玩家本轮游戏的投入信息
-        subPlayerRounds_[_player][_rID].totalKeys = _keys.add(subPlayerRounds_[_player][_rID].totalKeys); // 用户本轮总买入keys
-        subPlayerRounds_[_player][_rID].totalBet = _eth.add(subPlayerRounds_[_player][_rID].totalBet); // 用户本轮总花费eth
-        
-        // 更新本局的资金池总投入信息
-        sub_round_[_rID].keys = _keys.add(sub_round_[_rID].keys);
-        sub_round_[_rID].eth = _eth.add(sub_round_[_rID].eth);
+            // 注册用户
+            uct_.registWithAddr(_player);
 
-        // 注册用户
-        uct_.registWithAddr(_player);
+            // 计算本次对之前购买用户的一个分成-分成计算
+            // 56%进入总奖池 
+            uint _mrID = main_round_id_;
+            main_round_[_mrID].pot = (_eth.mul(sub_round_pot_ration)/100).add(main_round_[_mrID].pot);
+            // 40% 冲刺奖池
+            sub_round_[_rID].pot = (_eth.mul(sub_round_pot_ration)/100).add(sub_round_[_rID].pot);
+            // 3% 团队开发资金
+            uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
+            // 1% 手续费
+            uct_._opeAmount.fees = uct_._opeAmount.fees.add(_eth.mul(sub_round_fee_ration)/100);
 
-        // 计算本次对之前购买用户的一个分成-分成计算
-        // 43%进入总奖池 
-        sub_round_[_rID].pot = (_eth.mul(sub_round_pot_ration)/100).add(sub_round_[_rID].pot);
-        // 43% 进行分红 -遍历每一个用户占有所有的用户的持仓比例 mapping遍历有点复杂
-        uint256 _dividend = _eth.mul(sub_round_dividend_ration)/100;
-        sub_round_[_rID].dividend = sub_round_[_rID].dividend.add(_dividend);
-        uint256 _dividend_per_key = _dividend.div(sub_round_[_rID].keys);
-        subPlayerRounds_[_player][_rID].mask = subPlayerRounds_[_player][_rID].mask.add(sub_round_[_rID].mask.mul(_keys));
-        sub_round_[_rID].mask = _dividend_per_key.add(sub_round_[_rID].mask);
-        // 10% 推荐人, 跟新推荐人资金信息
-        bytes32 _inviter_name = uct_.getUserByAddr(_player).inviterName;
-        uint256 _profit = _eth.mul(sub_round_inviter_ration)/100;
-        if (_inviter_name != "") {
-            address _inviter = uct_._nameAddr[_inviter_name];
-            uct_._users[uct_._addrUids[_inviter]].inviteNum = uct_._users[uct_._addrUids[_inviter]].inviteNum.add(1);
-            uct_._userAmounts[_inviter].inviteProfit = uct_._userAmounts[_inviter].inviteProfit.add(_profit); // 邀请奖励
-            uct_._userAmounts[_inviter].withdrawAble = uct_._userAmounts[_inviter].withdrawAble.add(_profit); // 可提现
-            uct_._userAmounts[_inviter].totalBalance = uct_._userAmounts[_inviter].totalBalance.add(_profit); // 总余额
-        } else {
-            uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_profit); // 没有推荐人则进入开发基金
+            // 更新个人资金信息（UserAmount）
+            uct_._userAmounts[_player].totalKeys = uct_._userAmounts[_player].totalKeys.add(_keys); // 总令牌
+            uct_._userAmounts[_player].totalBet = uct_._userAmounts[_player].totalBet.add(_eth);    // 总投入eth
+            uct_._userAmounts[_player].lastKeys = uct_._userAmounts[_player].lastKeys = _keys;      // 最新一次购买的令牌
+            uct_._userAmounts[_player].lastBet = uct_._userAmounts[_player].lastBet = _eth;         // 最新一次投入eth量
+            // 更新最后玩家
+            sub_round_[_rID].plyr = _player;
+
+            // 更新奖池的时间信息
+            updateSubTimer(_keys, _rID);
+
+            // 更新钥匙价格
+        } 
+        // sub_round已经结束，但没有结束
+        else 
+            buyEndSub(_rID, _player, _keys, _eth);
+    }
+
+    function buyEndSub(uint256 _rID, address _player, uint256 _keys, uint256 _eth) 
+        private
+    {
+        endSub(_rID);
+        // 买入失败、由于手续费限制，将买入的金额计入主游戏
+        mainPlayerRounds_[_player][main_round_id_].drawable = mainPlayerRounds_[_player][main_round_id_].drawable.add(_eth);
+    }
+
+    function endSub(uint256 _rID) 
+        private
+    {
+        isSubRoundStart = false;
+        address _winer = sub_round_[_rID].plyr;
+        mainPlayerRounds_[_winer][main_round_id_].drawable = mainPlayerRounds_[_winer][main_round_id_].drawable.add(sub_round_[_rID].pot);
+        sub_round_[_rID].ended = true;
+        sub_round_[_rID].strt = sub_round_[_rID].end;
+        mainRestore(_rID, sub_round_[_rID].keys);
+    }
+
+    // 检查如果冲刺游戏时间结束，但仍标记为未结束时，结束冲刺游戏。
+    function checkStopSubRnd() 
+        private 
+    {
+        if (isSubRoundStart) 
+        {
+            uint256 _rID = sub_round_id_;
+            uint256 _now = now;
+            if (_now > sub_round_[_rID].strt && (_now <= sub_round_[_rID].end)) 
+                _now = _now;
+            else
+                endSub(_rID);
         }
-        // 3% 团队开发资金
-        uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
-        // 1% 手续费
-        uct_._opeAmount.fees = uct_._opeAmount.fees.add(_eth.mul(sub_round_fee_ration)/100);
+    }
 
-        // 更新个人资金信息（UserAmount）
-        uct_._userAmounts[_player].totalKeys = uct_._userAmounts[_player].totalKeys.add(_keys); // 总令牌
-        uct_._userAmounts[_player].totalBet = uct_._userAmounts[_player].totalBet.add(_eth);    // 总投入eth
-        uct_._userAmounts[_player].lastKeys = uct_._userAmounts[_player].lastKeys = _keys;      // 最新一次购买的令牌
-        uct_._userAmounts[_player].lastBet = uct_._userAmounts[_player].lastBet = _eth;         // 最新一次投入eth量
-
-        // 更新奖池的时间信息
-        updateTimer(_keys, _rID);
-
-        // 更新钥匙价格
+    // 冲刺游戏结束，主游戏恢复
+    function mainRestore(uint256 _sub_rID, uint256 _seconds)
+        private 
+    {
+        // TODO::
+        // 1. restore main
+        // 2. emit mainRestoreSubStop
     }
 
     /**
@@ -490,7 +564,21 @@ contract MyFomo {
         if (_newTime < (rndMax_).add(_now))
             main_round_[_rID].end = _newTime;
         else
-            main_round_[_rID].end = main_round_.add(_now);
+            main_round_[_rID].end = main_round_[_rID].strt.add(_now);
+            // main_round_[_rID].end = main_round_.add(_now); ??
+    }
+
+    // 更新冲刺游戏时间
+    function updateSubTimer(uint256 _keys, uint256 _rID)
+        private
+    {
+        // calculate time based on number of keys bought
+        uint256 _newTime = sub_round_[_rID].strt.add((((_keys) / (1000000000000000000)).mul(subRndDesc_)));
+        // compare to max and set new end time
+        if (_newTime.add(subRndMax_) >= sub_round_[_rID].end) 
+            endSub(_rID);
+        else
+            sub_round_[_rID].strt = _newTime;
     }
 
      /**
