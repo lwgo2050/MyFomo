@@ -16,7 +16,7 @@ contract MyFomo {
     using KeysCalcLong for uint256;
 
     bool public activated_ = false;
-    bool isMainRoundStop = true;
+    bool isSubStart = false;
 
     uint256 constant private rndInit_ = 1 hours;                // round timer starts at this
     uint256 constant private rndInc_ = 30 seconds;              // every full key purchased adds this much to the timer
@@ -52,8 +52,8 @@ contract MyFomo {
 
 
     /**
-     * @dev used to make sure no one can interact with contract until it has 
-     * been activated. 
+     * @dev 判断游戏是否激活 
+     * 
      */
     modifier isActivated() {
         require(activated_ == true, "its not ready yet.  check ?eta in discord"); 
@@ -81,20 +81,14 @@ contract MyFomo {
         _;    
     }
 
-    
-    bool isSubStart = false;
     function buy(uint256 rId, uint256 keyNum) 
         public
         payable
         isHuman()
         isActivated()
+        isWithinLimits()
     {
-        if (!isSubStart) {
-            buyMainRound();
-        }
-        else  {
-            buySubRound();
-        }
+        buyCore();
     }
 
     function withdraw(uint256 amount) 
@@ -339,8 +333,12 @@ contract MyFomo {
         // 如果主游戏已经激活的场景
         if (_now > main_round_[_rID].strt && (_now <= main_round_[_rID].end || (_now > main_round_[_rID].end && main_round_[_rID].plyr == 0))) 
         {
-            // call core 
-          
+            // 如果冲刺阶段的游戏没有开启，则买主轮游戏
+            if (!isSubStart) {
+                buyMainRound(_rID,msg.value);
+            } else {
+
+            }
         
         // 主游戏未激活的场景
         } else {
@@ -362,10 +360,16 @@ contract MyFomo {
      *  3.当前轮游戏的奖池变动
      *
      */
-    function buyMainRound(uint256 _rID, uint256 _keys, uint256 _eth) 
+    function buyMainRound(uint256 _rID, uint256 _eth) 
         private 
     {
         address _player = msg.sender; // 玩家地址
+
+        uint256 _keys = 0; // 计算玩家的eth能够买入的keys TODO 根据当前钥匙的价格 换算用户可以买入的钥匙数量
+        if (_keys >=1) {
+            main_round_[_rID].plyr = _player; // 设置本轮的最新买入者
+            updateTimer(_keys, _rID);
+        }
         // uint256 _eth = msg.value; // 玩家投入的eth
                                   // 是否要根据eth 换算成keys
 
@@ -408,11 +412,6 @@ contract MyFomo {
         uct_._userAmounts[_player].totalBet = uct_._userAmounts[_player].totalBet.add(_eth);    // 总投入eth
         uct_._userAmounts[_player].lastKeys = uct_._userAmounts[_player].lastKeys = _keys;      // 最新一次购买的令牌
         uct_._userAmounts[_player].lastBet = uct_._userAmounts[_player].lastBet = _eth;         // 最新一次投入eth量
-      
-        // 更新奖池的时间信息
-        updateTimer(_keys, _rID);
-
-        // 更新钥匙价格
     }
 
     function buySubRound(uint256 _rID, uint256 _keys, uint256 _eth)
