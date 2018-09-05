@@ -82,7 +82,7 @@ contract UserCenter is CoreBank {
      * brief: 根据用户钱包地址获取用户信息
      * 参数： addr[option] 用户钱包地址, 不传时默认获取用户自身的信息
      * 返回： User 成功时返回表示用户的User对象
-     */
+    */
     function getUserByAddr(address addr) 
         public 
         returns(address, bytes32, bytes32, uint256)

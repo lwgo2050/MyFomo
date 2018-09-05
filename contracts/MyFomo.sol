@@ -90,7 +90,7 @@ contract MyFomo {
         isActivated()
     {
         if (!isSubStart) {
-            buyMainRound(main_round_id_);
+            buyMainRound();
         }
         else  {
             buySubRound();
@@ -110,7 +110,7 @@ contract MyFomo {
         uint256 _now = now;
         
         // 玩家地址
-        address player = msg.sender;
+        address _player = msg.sender;
         
         // setup temp var for player eth
         uint256 _eth;
@@ -122,15 +122,15 @@ contract MyFomo {
             // 设置返回event数据
             MyFomoDataSet.EventReturns memory _eventData_;
             
-			main_round_[_rID].ended = true;
+            main_round_[_rID].ended = true;
             _eventData_ = endMainRound(_eventData_);
             
-			// 获取可提现的金额
-            _eth = withdrawEarnings(player); // TODO to be implements
+            // 获取可提现的金额
+            _eth = withdrawEarnings(_player); // TODO to be implements
             
             // 提现
             if (_eth > 0)
-                player.transfer(_eth);    
+                _player.transfer(_eth);    
             
             emit MyFomoEvents.onWithdrawAndDistribute
             (
@@ -146,14 +146,14 @@ contract MyFomo {
         // in any other situation
         } else {
             // get their earnings
-            _eth = withdrawEarnings(_pID);
+            _eth = withdrawEarnings(_player);
             
             // gib moni
             if (_eth > 0)
-                player.transfer(_eth);
+                _player.transfer(_eth);
             
             // fire withdraw event
-            emit F3Devents.onWithdraw( msg.sender, uct_.getUserByAddr(_player).name, _eth, _now);
+            emit MyFomoEvents.onWithdraw( msg.sender, uct_.getUserByAddr(_player).name, _eth, _now);
         }
         
     }
@@ -215,8 +215,8 @@ contract MyFomo {
         uint256 _now = now;
         
         // are we in a round?
-        if (_now > round_[_rID].strt && (_now <= main_round_[_rID].end || (_now > main_round_[_rID].end && main_round_[_rID].plyr == 0)))
-            return ( (round_[_rID].keys.add(1000000000000000000)).ethRec(1000000000000000000) );
+        if (_now > main_round_[_rID].strt && (_now <= main_round_[_rID].end || (_now > main_round_[_rID].end && main_round_[_rID].plyr == 0)))
+            return ( (main_round_[_rID].keys.add(1000000000000000000)).ethRec(1000000000000000000) );
         else // rounds over.  need price for new round
             return ( 75000000000000 ); // 这个初始价格和钥匙的增长机制 需要产品来定义
     }
@@ -285,7 +285,7 @@ contract MyFomo {
         view
         returns(uint256)
     {
-        emit MyFomoEvent.onNewUser();
+        emit MyFomoEvents.onNewUser();
     }
     
     /**
@@ -330,7 +330,7 @@ contract MyFomo {
         private 
     {
           // 设置当前轮
-        uint256 _rID = rID_;
+        uint256 _rID = main_round_;
         
         // 获取当前时间
         uint256 _now = now;
@@ -344,7 +344,6 @@ contract MyFomo {
         
         // 主游戏未激活的场景
         } else {
-            }
             
         }
     }
@@ -367,7 +366,7 @@ contract MyFomo {
         private 
     {
         address _player = msg.sender; // 玩家地址
-        uint256 _eth = msg.value; // 玩家投入的eth
+        // uint256 _eth = msg.value; // 玩家投入的eth
                                   // 是否要根据eth 换算成keys
 
         // 1.更新玩家本轮游戏的投入信息
@@ -375,8 +374,8 @@ contract MyFomo {
         mainPlayerRounds_[_player][_rID].totalBet = _eth.add(mainPlayerRounds_[_player][_rID].totalBet); // 用户本轮总花费eth
         
         // 更新本局的资金池总投入信息
-        main_round_[_rID].keys = _keys.add(round_[_rID].keys);
-        main_round_[_rID].eth = _eth.add(round_[_rID].eth);
+        main_round_[_rID].keys = _keys.add(main_round_[_rID].keys);
+        main_round_[_rID].eth = _eth.add(main_round_[_rID].eth);
 
         // 计算本次对之前购买用户的一个分成-分成计算
         // 43%进入总奖池 
@@ -386,18 +385,18 @@ contract MyFomo {
         uint256 _dividend = _eth.mul(main_round_dividend_ration)/100; // 进入分红奖池的比例
         main_round_[_rID].dividend = main_round_[_rID].dividend.add(_dividend);
         uint256 _dividend_per_key = _dividend.div(main_round_[_rID].keys); // 计算每个key的股息
-        mainPlayerRounds_[_player][_rID].mask = mainPlayerRounds_[_player][_rID].mask.add(main_round_[rID].mask.mul(_keys)); // 用户每次买入后计算应当扣除的部分
+        mainPlayerRounds_[_player][_rID].mask = mainPlayerRounds_[_player][_rID].mask.add(main_round_[_rID].mask.mul(_keys)); // 用户每次买入后计算应当扣除的部分
         // 10% 推荐人, 跟新推荐人资金信息
         bytes32 _inviter_name = uct_.getUserByAddr(_player).inviterName;
         uint256 _profit = _eth.mul(sub_round_inviter_ration)/100;
-        if (inviter != "") {
+        if (_inviter_name != "") {
             address _inviter = uct_._nameAddr[_inviter_name];
             uct_._users[uct_._addrUids[_inviter]].inviteNum = uct_._users[uct_._addrUids[_inviter]].inviteNum.add(1);
             uct_._userAmounts[_inviter].inviteProfit = uct_._userAmounts[_inviter].inviteProfit.add(_profit); // 邀请奖励
             uct_._userAmounts[_inviter].withdrawAble = uct_._userAmounts[_inviter].withdrawAble.add(_profit); // 可提现
             uct_._userAmounts[_inviter].totalBalance = uct_._userAmounts[_inviter].totalBalance.add(_profit); // 总余额
         } else {
-            uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(profit); // 没有推荐人则进入开发基金
+            uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_profit); // 没有推荐人则进入开发基金
         }
         // 3% 团队开发资金
         uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
@@ -420,7 +419,7 @@ contract MyFomo {
         private 
     {
         address _player = msg.sender; // 玩家地址
-        uint256 _eth = msg.value; // 玩家投入的eth
+        // uint256 _eth = msg.value; // 玩家投入的eth
                                   // 是否要根据eth 换算成keys
 
         // 1.更新玩家本轮游戏的投入信息
@@ -441,19 +440,19 @@ contract MyFomo {
         uint256 _dividend = _eth.mul(sub_round_dividend_ration)/100;
         sub_round_[_rID].dividend = sub_round_[_rID].dividend.add(_dividend);
         uint256 _dividend_per_key = _dividend.div(sub_round_[_rID].keys);
-        subPlayerRounds_[_player][_rID].mask = subPlayerRounds_[_player][_rID].mask.add(sub_round_[rID].mask.mul(_keys));
+        subPlayerRounds_[_player][_rID].mask = subPlayerRounds_[_player][_rID].mask.add(sub_round_[_rID].mask.mul(_keys));
         sub_round_[_rID].mask = _dividend_per_key.add(sub_round_[_rID].mask);
         // 10% 推荐人, 跟新推荐人资金信息
         bytes32 _inviter_name = uct_.getUserByAddr(_player).inviterName;
         uint256 _profit = _eth.mul(sub_round_inviter_ration)/100;
-        if (inviter != "") {
+        if (_inviter_name != "") {
             address _inviter = uct_._nameAddr[_inviter_name];
             uct_._users[uct_._addrUids[_inviter]].inviteNum = uct_._users[uct_._addrUids[_inviter]].inviteNum.add(1);
             uct_._userAmounts[_inviter].inviteProfit = uct_._userAmounts[_inviter].inviteProfit.add(_profit); // 邀请奖励
             uct_._userAmounts[_inviter].withdrawAble = uct_._userAmounts[_inviter].withdrawAble.add(_profit); // 可提现
             uct_._userAmounts[_inviter].totalBalance = uct_._userAmounts[_inviter].totalBalance.add(_profit); // 总余额
         } else {
-            uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(profit); // 没有推荐人则进入开发基金
+            uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_profit); // 没有推荐人则进入开发基金
         }
         // 3% 团队开发资金
         uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
@@ -508,7 +507,7 @@ contract MyFomo {
         // 获取当前轮最后一位买入用户
         // TODO: by Leon， 每次买入都需要更新plyr
         uint256 _winAddress = main_round_[_rID].plyr;
-        bytes32 _winName = uct_.getUserByAddr(_player).name;
+        bytes32 _winName = uct_.getUserByAddr(_winAddress).name;
         
         // 获取可以分给最终用户的奖池金额
         uint256 _pot = main_round_[_rID].pot;
@@ -524,8 +523,8 @@ contract MyFomo {
         uint256 _ppt = _keyPlr / (main_round_[_rID].keys);
         
         // 设置最终赢家增加金额
-        uct_._userAmounts[_winAddress].totalBalance = uct_._userAmounts[_playe_winAddressr].totalBalance.add(_win); // 增加总余额
-        uct_._userAmounts[_winAddress].withdrawAble = uct_._userAmounts[_playe_winAddressr].withdrawAble.add(_win); // 增加可提现总量
+        uct_._userAmounts[_winAddress].totalBalance = uct_._userAmounts[_winAddress].totalBalance.add(_win); // 增加总余额
+        uct_._userAmounts[_winAddress].withdrawAble = uct_._userAmounts[_winAddress].withdrawAble.add(_win); // 增加可提现总量
 
         // 团队开发基金
         uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_dev);
@@ -540,7 +539,7 @@ contract MyFomo {
         _eventData_.newPot = _nexPot;
         
         // start next round
-        rID_++;
+        main_round_id_++;
         _rID++;
         main_round_[_rID].strt = now;
         main_round_[_rID].end = now.add(rndInit_);
@@ -573,8 +572,8 @@ contract MyFomo {
 //====================/=========================================================
     /** upon contract deploy, it will be deactivated.  this is a one time
      * use function that will activate the contract.  we do this so devs 
-     * have time to set things up on the web end                            **/
-    bool public activated_ = false;
+     * have time to set things up on the web end                           
+     **/
     function activate()
         public
     {
@@ -595,7 +594,7 @@ contract MyFomo {
         activated_ = true;
         
         // lets start first round
-		main_round_id_ = 1;
+        main_round_id_ = 1;
         main_round_id_[1].strt = now + rndInit_;
         main_round_id_[1].end = now + rndInit_ + rndMax_;
     }
