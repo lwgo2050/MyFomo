@@ -20,6 +20,7 @@ contract MyFomoDataSet {
         uint256 pot;        // 可以分配给当轮所有玩家的奖池金额（eth）
         uint256 dividend;   // 已经分红的金额（eth）
         uint256 mask;       // global mask
+        uint256 subTime;    // 冲刺游戏进行的时间(sub only)
     }
 
     struct User {

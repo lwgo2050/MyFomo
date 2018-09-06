@@ -328,6 +328,7 @@ contract MyFomo is UserCenter {
 
         // 判断当前游戏是否在激活状态
         // 如果主游戏已经激活的场景
+        // TODO::因涉及到冲刺游戏，通过时间判断主游戏是否结束可能不太靠谱，冲刺游戏中时，主游戏的时间是暂停的，但是now一直在变化
         if (_now > main_round_[_rID].strt && (_now <= main_round_[_rID].end || (_now > main_round_[_rID].end && main_round_[_rID].plyr == 0))) 
         {
             // 如果冲刺阶段的游戏没有开启，则买主轮游戏
@@ -408,8 +409,8 @@ contract MyFomo is UserCenter {
         // 更新个人资金信息（UserAmount）
         userAmounts_[_player].totalKeys = userAmounts_[_player].totalKeys.add(_keys); // 总令牌
         userAmounts_[_player].totalBet = userAmounts_[_player].totalBet.add(_eth);    // 总投入eth
-        userAmounts_[_player].lastKeys = userAmounts_[_player].lastKeys = _keys;      // 最新一次购买的令牌
-        userAmounts_[_player].lastBet = userAmounts_[_player].lastBet = _eth;         // 最新一次投入eth量
+        userAmounts_[_player].lastKeys = _keys;      // 最新一次购买的令牌
+        userAmounts_[_player].lastBet = _eth;         // 最新一次投入eth量
     }
 
     function buySubRound(uint256 _rID, uint256 _keys)
@@ -438,7 +439,7 @@ contract MyFomo is UserCenter {
             uint _mrID = main_round_id_;
             main_round_[_mrID].pot = (_eth.mul(sub_round_pot_ration)/100).add(main_round_[_mrID].pot);
             // 40% 冲刺奖池
-            sub_round_[_rID].pot = (_eth.mul(sub_round_pot_ration)/100).add(sub_round_[_rID].pot);
+            sub_round_[_rID].pot = (_eth.mul(sub_round_subpot_ration)/100).add(sub_round_[_rID].pot);
             // 3% 团队开发资金
             _opeAmount.devFund = _opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
             // 1% 手续费
@@ -447,8 +448,8 @@ contract MyFomo is UserCenter {
             // 更新个人资金信息（UserAmount）
             userAmounts_[_player].totalKeys = userAmounts_[_player].totalKeys.add(_keys); // 总令牌
             userAmounts_[_player].totalBet = userAmounts_[_player].totalBet.add(_eth);    // 总投入eth
-            userAmounts_[_player].lastKeys = userAmounts_[_player].lastKeys = _keys;      // 最新一次购买的令牌
-            userAmounts_[_player].lastBet = userAmounts_[_player].lastBet = _eth;         // 最新一次投入eth量
+            userAmounts_[_player].lastKeys = _keys;      // 最新一次购买的令牌
+            userAmounts_[_player].lastBet = _eth;         // 最新一次投入eth量
             // 更新最后玩家
             sub_round_[_rID].plyr = _player;
 
@@ -459,10 +460,10 @@ contract MyFomo is UserCenter {
         } 
         // sub_round已经结束，但没有结束
         else 
-            buyEndSub(_rID, _player, _keys, _eth);
+            buyEndSub(_rID, _player, _eth);
     }
 
-    function buyEndSub(uint256 _rID, address _player, uint256 _keys, uint256 _eth) 
+    function buyEndSub(uint256 _rID, address _player, uint256 _eth) 
         private
     {
         endSub(_rID);
@@ -479,7 +480,7 @@ contract MyFomo is UserCenter {
         mainPlayerRounds_[_winer][main_round_id_].withdrawAble = _win_eth;
         sub_round_[_rID].ended = true;
         sub_round_[_rID].strt = sub_round_[_rID].end;
-        mainRestore(_rID, sub_round_[_rID].keys);
+        mainRestore(_rID, sub_round_[_rID].subTime, sub_round_[_rID].keys);
     }
 
     // 检查如果冲刺游戏时间结束，但仍标记为未结束时，结束冲刺游戏。
@@ -498,12 +499,33 @@ contract MyFomo is UserCenter {
     }
 
     // 冲刺游戏结束，主游戏恢复
-    function mainRestore(uint256 _sub_rID, uint256 _seconds)
+    function mainRestore(uint256 _sub_rID, uint256 _subTime, uint256 _seconds)
         private 
     {
         // TODO::
-        // 1. restore main
-        // 2. emit mainRestoreSubStop
+        uint256 _rID = main_round_id_;
+        // 结束时间推后冲刺游戏的游戏时间
+        main_round_[_rID].end = main_round_[_rID].end.add(_subTime);
+        // 减去冲刺游戏中缩短的时间
+        main_round_[_rID].end = main_round_[_rID].end.sub(_seconds);
+        // 直接结束主游戏
+        if (main_round_[_rID].end.sub(main_round_[_rID].strt) <= 0) {
+            MyFomoDataSet.EventReturns memory _eventData_;
+            _eventData_ = endMainRound(_eventData_);
+            // TODO::
+            emit onMainAndSubTop(
+                mainRound, mainRoundStartTime, mainRoundEndTime, mainRoundKey,
+                mainRoundeth, mainRoundPot, subRound, subRoundStartTime, 
+                subRoundEndTime, subRoundKey, subRoundeth, subRoundPot
+            );
+        }
+        else
+            emit onMainRestartSubStop(
+                _rID, main_round_[_rID].strt, main_round_[_rID].end, main_round_[_rID].keys,
+                main_round_[_rID].eth, main_round_[_rID].pot, _sub_rID, 
+                sub_round_[_sub_rID].strt, sub_round_[_sub_rID].strt, sub_round_[_sub_rID].keys,
+                sub_round_[_sub_rID].eth, sub_round_[_sub_rID].pot
+            );
     }
 
     /**
@@ -536,6 +558,8 @@ contract MyFomo is UserCenter {
     {
         // calculate time based on number of keys bought
         uint256 _newTime = sub_round_[_rID].strt.add((((_keys) / (1000000000000000000)).mul(subRndDesc_)));
+        uint256 _now = now;
+        sub_round_[_rID].subTime = sub_round_[_rID].subTime.add(_now.sub(sub_round_[_rID].strt));
         // compare to max and set new end time
         if (_newTime.add(subRndMax_) >= sub_round_[_rID].end) 
             endSub(_rID);
@@ -552,6 +576,7 @@ contract MyFomo is UserCenter {
     {
         // 设置主游戏的ID
         uint256 _rID = main_round_id_;
+        main_round_[_rID].ended = true;
         
         // 获取当前轮最后一位买入用户
         // TODO: by Leon， 每次买入都需要更新plyr
