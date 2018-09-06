@@ -1,5 +1,4 @@
 pragma solidity ^0.4.23;
-import "./MyFomoEvents.sol";
 import "./MyFomoDataSet.sol";
 
 import "./library/SafeMath.sol";
@@ -10,7 +9,7 @@ import "./library/KeysCalcLong.sol";
 
 import "./UserCenter.sol";
 
-contract MyFomo {
+contract MyFomo is UserCenter {
     using SafeMath for *;
     using NameFilter for string;
     using KeysCalcLong for uint256;
@@ -44,15 +43,12 @@ contract MyFomo {
 
     // (pID => rID => data) player round data by player id & round id
     // 主游戏每轮玩家的当前轮玩家信息，是用address还是palyername待定
-    mapping (uint256 => mapping (uint256 => MyFomoDataSet.PlayerAmount)) public mainPlayerRounds_;
+    mapping (address => mapping (uint256 => MyFomoDataSet.PlayerAmount)) public mainPlayerRounds_;
     // 冲刺阶段，每轮玩家的信息
-    mapping (uint256 => mapping (uint256 => MyFomoDataSet.PlayerAmount)) public subPlayerRounds_;
+    mapping (address => mapping (uint256 => MyFomoDataSet.PlayerAmount)) public subPlayerRounds_;
 
     uint256 public main_round_id_;    // round id number / total rounds that have happened
     uint256 public sub_round_id_;    // round id number / total rounds that have happened
-
-    UserCenter public uct_;
-
 
     /**
      * @dev 判断游戏是否激活 
@@ -89,7 +85,7 @@ contract MyFomo {
         payable
         isHuman()
         isActivated()
-        isWithinLimits()
+        isWithinLimits(msg.value)
     {
         buyCore();
     }
@@ -129,10 +125,10 @@ contract MyFomo {
             if (_eth > 0)
                 _player.transfer(_eth);    
             
-            emit MyFomoEvents.onWithdrawAndDistribute
+            emit onWithdrawAndDistribute
             (
                 msg.sender, 
-                uct_.getUserByAddr(_player).name, 
+                users_[addrUids_[_player]].name, 
                 _eth, 
                 _eventData_.winnerAddr, 
                 _eventData_.winnerName, 
@@ -150,44 +146,9 @@ contract MyFomo {
                 _player.transfer(_eth);
             
             // fire withdraw event
-            emit MyFomoEvents.onWithdraw( msg.sender, uct_.getUserByAddr(_player).name, _eth, _now);
+            emit onWithdraw( msg.sender, users_[addrUids_[_player]].name, _eth, _now);
         }
         
-    }
-    
-    function registWithName(string name) isHuman()
-        public
-        payable
-    {
-        checkStopSubRnd();
-        uct_.registWithName(name);
-    }
-
-    /**
-     * brief: 根据用户名获取用户信息
-     * 参数： name 用户名(邀请码)
-     * 返回： User 成功时返回表示用户的User对象
-     * address addr;           // 用户钱包地址
-     * bytes32 name;           // 用户名(邀请码)
-     * bytes32 inviterName;    // 邀请人名称
-     * uint256 inviteNum;      // 该用户邀请的人数
-     */
-    function getUserByName(string name) 
-        public
-        view
-        returns(address,bytes32,bytes32,uint256)
-    {
-        checkStopSubRnd();
-        return uct_.getUserByName(name);
-    }
-
-    function getUserByAddr(address addr)
-        public
-        view
-        returns(address,bytes32,bytes32,uint256)
-    {
-        checkStopSubRnd();
-        return uct_.getUsrByAddr(addr);
     }
 
     /**
@@ -204,19 +165,19 @@ contract MyFomo {
      * uint256 totalProfit;        // 获益总量 （不算成本)
      * uint256 inviteProfit;       // 邀请获益(eth)
      */
-    function getUserAmountByName(string name) 
+    function getUserRndAmountByName(string name) 
         public
         view
         returns(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
     { 
         checkStopSubRnd();
         MyFomoDataSet.UserAmount memory amt = MyFomoDataSet.UserAmount(0,0,0,0,0,0,0,0,0);
-        if (uct_.userExist(name))
-            amt = uct_._userAmounts[uct_._nameAddr[name.nameFilter()]];
+        if (userExist(name))
+            amt = userAmounts_[nameAddr_[name.nameFilter()]];
         
     }
 
-    function getUserAmountByAddr(address addr)
+    function getUserRndAmountByAddr(address addr)
         public
         view
         returns(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
@@ -300,7 +261,7 @@ contract MyFomo {
             main_round_[_rID].keys,              //4
             main_round_[_rID].eth,               //5
             main_round_[_rID].pot,               //6
-            main_round_[_rID].dividend,          //7
+            main_round_[_rID].dividend           //7
         );
     }
 
@@ -345,7 +306,7 @@ contract MyFomo {
             sub_round_[_rID].keys,              //4
             sub_round_[_rID].eth,               //5
             sub_round_[_rID].pot,               //6
-            sub_round_[_rID].dividend,          //7
+            sub_round_[_rID].dividend           //7
         );
     }
 
@@ -360,7 +321,7 @@ contract MyFomo {
         private 
     {
           // 设置当前轮
-        uint256 _rID = main_round_;
+        uint256 _rID = main_round_id_;
         
         // 获取当前时间
         uint256 _now = now;
@@ -428,27 +389,27 @@ contract MyFomo {
         // uint256 _dividend_per_key = _dividend.div(main_round_[_rID].keys); // 计算每个key的股息
         mainPlayerRounds_[_player][_rID].mask = mainPlayerRounds_[_player][_rID].mask.add(main_round_[_rID].mask.mul(_keys)); // 用户每次买入后计算应当扣除的部分
         // 10% 推荐人, 跟新推荐人资金信息
-        bytes32 _inviter_name = uct_.getUserByAddr(_player).inviterName;
+        bytes32 _inviter_name = users_[addrUids_[_player]].inviterName;
         uint256 _profit = _eth.mul(main_round_inviter_ration)/100;
         if (_inviter_name != "") {
-            address _inviter = uct_._nameAddr[_inviter_name];
-            uct_._users[uct_._addrUids[_inviter]].inviteNum = uct_._users[uct_._addrUids[_inviter]].inviteNum.add(1);
-            uct_._userAmounts[_inviter].inviteProfit = uct_._userAmounts[_inviter].inviteProfit.add(_profit); // 邀请奖励
-            uct_._userAmounts[_inviter].withdrawAble = uct_._userAmounts[_inviter].withdrawAble.add(_profit); // 可提现
-            uct_._userAmounts[_inviter].totalBalance = uct_._userAmounts[_inviter].totalBalance.add(_profit); // 总余额
+            address _inviter = nameAddr_[_inviter_name];
+            users_[addrUids_[_inviter]].inviteNum = users_[addrUids_[_inviter]].inviteNum.add(1);
+            userAmounts_[_inviter].inviteProfit = userAmounts_[_inviter].inviteProfit.add(_profit); // 邀请奖励
+            userAmounts_[_inviter].withdrawAble = userAmounts_[_inviter].withdrawAble.add(_profit); // 可提现
+            userAmounts_[_inviter].totalBalance = userAmounts_[_inviter].totalBalance.add(_profit); // 总余额
         } else {
-            uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_profit); // 没有推荐人则进入开发基金
+            _opeAmount.devFund = _opeAmount.devFund.add(_profit); // 没有推荐人则进入开发基金
         }
         // 3% 团队开发资金
-        uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
+        _opeAmount.devFund = _opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
         // 1% 手续费
-        uct_._opeAmount.fees = uct_._opeAmount.fees.add(_eth.mul(sub_round_fee_ration)/100);
+        _opeAmount.fees = _opeAmount.fees.add(_eth.mul(sub_round_fee_ration)/100);
 
         // 更新个人资金信息（UserAmount）
-        uct_._userAmounts[_player].totalKeys = uct_._userAmounts[_player].totalKeys.add(_keys); // 总令牌
-        uct_._userAmounts[_player].totalBet = uct_._userAmounts[_player].totalBet.add(_eth);    // 总投入eth
-        uct_._userAmounts[_player].lastKeys = uct_._userAmounts[_player].lastKeys = _keys;      // 最新一次购买的令牌
-        uct_._userAmounts[_player].lastBet = uct_._userAmounts[_player].lastBet = _eth;         // 最新一次投入eth量
+        userAmounts_[_player].totalKeys = userAmounts_[_player].totalKeys.add(_keys); // 总令牌
+        userAmounts_[_player].totalBet = userAmounts_[_player].totalBet.add(_eth);    // 总投入eth
+        userAmounts_[_player].lastKeys = userAmounts_[_player].lastKeys = _keys;      // 最新一次购买的令牌
+        userAmounts_[_player].lastBet = userAmounts_[_player].lastBet = _eth;         // 最新一次投入eth量
     }
 
     function buySubRound(uint256 _rID, uint256 _keys)
@@ -470,7 +431,7 @@ contract MyFomo {
             sub_round_[_rID].eth = _eth.add(sub_round_[_rID].eth);
 
             // 注册用户
-            uct_.registWithAddr(_player);
+            registWithAddr(_player);
 
             // 计算本次对之前购买用户的一个分成-分成计算
             // 56%进入总奖池 
@@ -479,15 +440,15 @@ contract MyFomo {
             // 40% 冲刺奖池
             sub_round_[_rID].pot = (_eth.mul(sub_round_pot_ration)/100).add(sub_round_[_rID].pot);
             // 3% 团队开发资金
-            uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
+            _opeAmount.devFund = _opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
             // 1% 手续费
-            uct_._opeAmount.fees = uct_._opeAmount.fees.add(_eth.mul(sub_round_fee_ration)/100);
+            _opeAmount.fees = _opeAmount.fees.add(_eth.mul(sub_round_fee_ration)/100);
 
             // 更新个人资金信息（UserAmount）
-            uct_._userAmounts[_player].totalKeys = uct_._userAmounts[_player].totalKeys.add(_keys); // 总令牌
-            uct_._userAmounts[_player].totalBet = uct_._userAmounts[_player].totalBet.add(_eth);    // 总投入eth
-            uct_._userAmounts[_player].lastKeys = uct_._userAmounts[_player].lastKeys = _keys;      // 最新一次购买的令牌
-            uct_._userAmounts[_player].lastBet = uct_._userAmounts[_player].lastBet = _eth;         // 最新一次投入eth量
+            userAmounts_[_player].totalKeys = userAmounts_[_player].totalKeys.add(_keys); // 总令牌
+            userAmounts_[_player].totalBet = userAmounts_[_player].totalBet.add(_eth);    // 总投入eth
+            userAmounts_[_player].lastKeys = userAmounts_[_player].lastKeys = _keys;      // 最新一次购买的令牌
+            userAmounts_[_player].lastBet = userAmounts_[_player].lastBet = _eth;         // 最新一次投入eth量
             // 更新最后玩家
             sub_round_[_rID].plyr = _player;
 
@@ -506,7 +467,7 @@ contract MyFomo {
     {
         endSub(_rID);
         // 买入失败、由于手续费限制，将买入的金额计入主游戏
-        mainPlayerRounds_[_player][main_round_id_].drawable = mainPlayerRounds_[_player][main_round_id_].drawable.add(_eth);
+        mainPlayerRounds_[_player][main_round_id_].withdrawAble = mainPlayerRounds_[_player][main_round_id_].withdrawAble.add(_eth);
     }
 
     function endSub(uint256 _rID) 
@@ -514,7 +475,8 @@ contract MyFomo {
     {
         isSubRoundStart = false;
         address _winer = sub_round_[_rID].plyr;
-        mainPlayerRounds_[_winer][main_round_id_].drawable = mainPlayerRounds_[_winer][main_round_id_].drawable.add(sub_round_[_rID].pot);
+        uint256 _win_eth = mainPlayerRounds_[_winer][main_round_id_].withdrawAble.add(sub_round_[_rID].pot);
+        mainPlayerRounds_[_winer][main_round_id_].withdrawAble = _win_eth;
         sub_round_[_rID].ended = true;
         sub_round_[_rID].strt = sub_round_[_rID].end;
         mainRestore(_rID, sub_round_[_rID].keys);
@@ -593,8 +555,8 @@ contract MyFomo {
         
         // 获取当前轮最后一位买入用户
         // TODO: by Leon， 每次买入都需要更新plyr
-        uint256 _winAddress = main_round_[_rID].plyr;
-        bytes32 _winName = uct_.getUserByAddr(_winAddress).name;
+        address _winAddress = main_round_[_rID].plyr;
+        bytes32 _winName = users_[addrUids_[_winAddress]].name;
         
         // 获取可以分给最终用户的奖池金额
         uint256 _pot = main_round_[_rID].pot;
@@ -610,11 +572,11 @@ contract MyFomo {
         uint256 _ppt = _keyPlr / (main_round_[_rID].keys);
         
         // 设置最终赢家增加金额
-        uct_._userAmounts[_winAddress].totalBalance = uct_._userAmounts[_winAddress].totalBalance.add(_win); // 增加总余额
-        uct_._userAmounts[_winAddress].withdrawAble = uct_._userAmounts[_winAddress].withdrawAble.add(_win); // 增加可提现总量
+        userAmounts_[_winAddress].totalBalance = userAmounts_[_winAddress].totalBalance.add(_win); // 增加总余额
+        userAmounts_[_winAddress].withdrawAble = userAmounts_[_winAddress].withdrawAble.add(_win); // 增加可提现总量
 
         // 团队开发基金
-        uct_._opeAmount.devFund = uct_._opeAmount.devFund.add(_dev);
+        _opeAmount.devFund = _opeAmount.devFund.add(_dev);
         
         // 分配给key的持有者
         main_round_[_rID].mask = _ppt.add(main_round_[_rID].mask);
@@ -636,7 +598,7 @@ contract MyFomo {
     }
 
 
-    function withdrawEarnings(uint256 _pID)
+    function withdrawEarnings(address _pID)
         private
         returns(uint256)
     {
@@ -682,8 +644,8 @@ contract MyFomo {
         
         // lets start first round
         main_round_id_ = 1;
-        main_round_id_[1].strt = now + rndInit_;
-        main_round_id_[1].end = now + rndInit_ + rndMax_;
+        main_round_[1].strt = now + rndInit_;
+        main_round_[1].end = now + rndInit_ + rndMax_;
     }
 
 }

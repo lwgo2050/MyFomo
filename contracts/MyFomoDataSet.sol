@@ -48,6 +48,7 @@ contract MyFomoDataSet {
         uint256 dividend;           // 分红奖励
         uint256 withdrawAble;       // 可提现总量(eth)
         uint256 withdraw;           // 已提现数量(eth)
+        uint256 mask;               // 用于计算分红的参数
     }
 
     struct OperationAmount {

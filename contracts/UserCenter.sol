@@ -7,9 +7,9 @@ import "./library/MSFun.sol";
 import "./MyFomoDataSet.sol";
 import "./MyFomoEvents.sol";
 
-contract CoreBank {
+contract CoreBank is MyFomoEvents {
     MyFomoDataSet.OperationAmount public _opeAmount;                   // 运营资金信息
-    mapping(address => MyFomoDataSet.UserAmount) public _userAmounts;  // 用户钱包地址 => 资金信息
+    mapping(address => MyFomoDataSet.UserAmount) public userAmounts_;  // 用户钱包地址 => 资金信息
 }
 
 contract UserCenter is CoreBank {
@@ -17,11 +17,11 @@ contract UserCenter is CoreBank {
     using SafeMath for uint256;
 
     uint256 public _uid; // 用户id 从1开始
-    mapping(uint256 => MyFomoDataSet.User) public _users; // user id => user
-    mapping(address => uint256) public _addrUids; // user address => user id
-    mapping(bytes32 => address) public _nameAddr; // user name => user address
+    mapping(uint256 => MyFomoDataSet.User) public users_; // user id => user
+    mapping(address => uint256) public addrUids_; // user address => user id
+    mapping(bytes32 => address) public nameAddr_; // user name => user address
     mapping(address => uint256) public _admins; // admin users
-    
+
     constructor()
         public
     {
@@ -41,19 +41,19 @@ contract UserCenter is CoreBank {
             bytes32 name = nameStr.nameFilter();
             bytes32 inviter = inviterStr.nameFilter();
             bool isNew = false;
-            if (_addrUids[msg.sender] == 0)   
+            if (addrUids_[msg.sender] == 0)   
                 isNew = true;
             registCore(msg.sender, name, inviter, isNew);
         } 
     }
 
     function registWithAddr(address addr) 
-        private
+        public
     {
         uint256 codeLength;
         assembly {codeLength := extcodesize(addr)}
         require(codeLength == 0, "sorry humans only");
-        if (_addrUids[addr] == 0) {
+        if (addrUids_[addr] == 0) {
             registCore(addr, "", "", true);
         }
     }
@@ -73,7 +73,7 @@ contract UserCenter is CoreBank {
     {
         MyFomoDataSet.User memory usr = MyFomoDataSet.User(0, "", "", 0);
         if (checkIfNameValid(name))
-             usr = _users[_addrUids[_nameAddr[name.nameFilter()]]];
+             usr = users_[addrUids_[nameAddr_[name.nameFilter()]]];
 
         return (usr.addr, usr.name, usr.inviterName, usr.inviteNum); 
     }
@@ -88,8 +88,8 @@ contract UserCenter is CoreBank {
         returns(address, bytes32, bytes32, uint256)
     {
         MyFomoDataSet.User memory usr = MyFomoDataSet.User(0, "", "", 0);
-        if (_addrUids[addr] != 0)
-             usr = _users[_addrUids[addr]];
+        if (addrUids_[addr] != 0)
+             usr = users_[addrUids_[addr]];
 
         return (usr.addr, usr.name, usr.inviterName, usr.inviteNum); 
     }
@@ -114,7 +114,7 @@ contract UserCenter is CoreBank {
     {
         MyFomoDataSet.UserAmount memory amt = MyFomoDataSet.UserAmount(0,0,0,0,0,0,0,0,0);
         if (userExist(name))
-            amt = _userAmounts[_nameAddr[name.nameFilter()]];
+            amt = userAmounts_[nameAddr_[name.nameFilter()]];
         
         return (
             amt.totalKeys, amt.totalBet, amt.lastKeys, 
@@ -133,36 +133,14 @@ contract UserCenter is CoreBank {
         returns(uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256)
     {
         MyFomoDataSet.UserAmount memory amt = MyFomoDataSet.UserAmount(0,0,0,0,0,0,0,0,0);
-        if (_addrUids[addr] != 0)
-            amt = _userAmounts[addr];
+        if (addrUids_[addr] != 0)
+            amt = userAmounts_[addr];
         
         return (
             amt.totalKeys, amt.totalBet, amt.lastKeys, 
             amt.lastBet, amt.totalBalance, amt.withdrawAble,
             amt.withdraw, amt.totalProfit, amt.inviteProfit
         );
-    }
-
-    /**
-     * brief: 用户提现
-     * 参数: amount 提现数量
-     */
-    function withdraw(uint256 amount) isHuman()
-        public
-        payable 
-    {
-
-    }
-
-    /**
-     * brief: 运营提现, 与用户提现区分，减少风险
-     * 参数： amount 提现数量
-     */
-    function operateWithdraw(uint256 amount) isHuman() isOwner()
-        public
-        payable
-    {
-
     }
     
     function checkIfNameValid(string nameStr)
@@ -171,7 +149,7 @@ contract UserCenter is CoreBank {
         returns(bool)
     {
         bytes32 name = nameStr.nameFilter();
-        if (_nameAddr[name] == 0)
+        if (nameAddr_[name] == 0)
             return (true);
         else 
             return (false);
@@ -183,7 +161,7 @@ contract UserCenter is CoreBank {
         returns(bool)
     {
         bytes32 name = nameStr.nameFilter();
-        if (_nameAddr[name] == 0) {
+        if (nameAddr_[name] == 0) {
             return (true);
         } else {
             return (false);
@@ -193,26 +171,26 @@ contract UserCenter is CoreBank {
     function registCore(address addr, bytes32 name, bytes32 inviter, bool isNew) 
         private
     {
-        uint256 uid = _addrUids[addr];
+        uint256 uid = addrUids_[addr];
         if (isNew) {
             uid = _uid;
             if (name != "") {
-                _nameAddr[name] = addr;
+                nameAddr_[name] = addr;
             }
-            _addrUids[addr] = _uid;
-            _users[uid] = MyFomoDataSet.User(addr, name, inviter, 0);
+            addrUids_[addr] = _uid;
+            users_[uid] = MyFomoDataSet.User(addr, name, inviter, 0);
             _uid += 1;
         } else {
-            _nameAddr[name] = addr;
-            _users[uid].name = name;
-            _users[uid].inviterName = inviter;
+            nameAddr_[name] = addr;
+            users_[uid].name = name;
+            users_[uid].inviterName = inviter;
         }
-        if (_nameAddr[inviter] == 0) 
-            _users[uid].inviterName = "";
+        if (nameAddr_[inviter] == 0) 
+            users_[uid].inviterName = "";
         else 
-            _users[_addrUids[_nameAddr[inviter]]].inviteNum += 1;
+            users_[addrUids_[nameAddr_[inviter]]].inviteNum += 1;
 
-        emit MyFomoEvents.onNewUser(addr, name, _nameAddr[_users[uid].inviterName], _users[uid].inviterName, isNew, now);
+        emit onNewUser(addr, name, nameAddr_[users_[uid].inviterName], users_[uid].inviterName, isNew, now);
         
     }
 
