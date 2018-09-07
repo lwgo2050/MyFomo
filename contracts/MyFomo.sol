@@ -108,7 +108,7 @@ contract MyFomo is UserCenter {
         // setup temp var for player eth
         uint256 _eth;
         
-        // 检查当前游戏是否已经结束
+        // 检查当前主游戏是否已经结束
         if (_now > main_round_[_rID].end && main_round_[_rID].ended == false && main_round_[_rID].plyr != 0)
         {
             // 该轮游戏已经结束，终止游戏
@@ -123,7 +123,7 @@ contract MyFomo is UserCenter {
             
             // 提现
             if (_eth > 0)
-                _player.transfer(_eth);    
+                _player.transfer(_eth);
             
             emit onWithdrawAndDistribute
             (
@@ -320,8 +320,8 @@ contract MyFomo is UserCenter {
     function buyCore()
         private 
     {
-          // 设置当前轮
-        uint256 _rID = main_round_id_;
+        // 设置当前主轮
+        uint256 _rID = main_round_id_; 
         
         // 获取当前时间
         uint256 _now = now;
@@ -364,8 +364,9 @@ contract MyFomo is UserCenter {
     {
         address _player = msg.sender; // 玩家地址
 
-        uint256 _keys = 0; // 计算玩家的eth能够买入的keys TODO 根据当前钥匙的价格 换算用户可以买入的钥匙数量
-        if (_keys >=1) {
+        uint256 _keys = 0; // 计算玩家的eth能够买入的keys TODO:: 根据当前钥匙的价格 换算用户可以买入的钥匙数量
+        // TODO:: 如果用户买入一把完整的钥匙，需要去更新钥匙的价格以及当前游戏的剩余时间
+        if (_keys >= 1) {
             main_round_[_rID].plyr = _player; // 设置本轮的最新买入者
             updateTimer(_keys, _rID);
         }
@@ -402,9 +403,9 @@ contract MyFomo is UserCenter {
             _opeAmount.devFund = _opeAmount.devFund.add(_profit); // 没有推荐人则进入开发基金
         }
         // 3% 团队开发资金
-        _opeAmount.devFund = _opeAmount.devFund.add(_eth.mul(sub_round_developer_ration)/100);
+        _opeAmount.devFund = _opeAmount.devFund.add(_eth.mul(main_round_developer_ration)/100);
         // 1% 手续费
-        _opeAmount.fees = _opeAmount.fees.add(_eth.mul(sub_round_fee_ration)/100);
+        _opeAmount.fees = _opeAmount.fees.add(_eth.mul(main_round_fee_ration)/100);
 
         // 更新个人资金信息（UserAmount）
         userAmounts_[_player].totalKeys = userAmounts_[_player].totalKeys.add(_keys); // 总令牌
@@ -480,7 +481,7 @@ contract MyFomo is UserCenter {
         mainPlayerRounds_[_winer][main_round_id_].withdrawAble = _win_eth;
         sub_round_[_rID].ended = true;
         sub_round_[_rID].strt = sub_round_[_rID].end;
-        mainRestore(_rID, sub_round_[_rID].subTime, sub_round_[_rID].keys);
+        mainRestore(sub_round_[_rID].subTime, sub_round_[_rID].keys);
     }
 
     // 检查如果冲刺游戏时间结束，但仍标记为未结束时，结束冲刺游戏。
@@ -499,11 +500,12 @@ contract MyFomo is UserCenter {
     }
 
     // 冲刺游戏结束，主游戏恢复
-    function mainRestore(uint256 _sub_rID, uint256 _subTime, uint256 _seconds)
+    function mainRestore(uint256 _subTime, uint256 _seconds)
         private 
     {
         // TODO::
         uint256 _rID = main_round_id_;
+        uint256 _sub_rID = sub_round_id_;
         // 结束时间推后冲刺游戏的游戏时间
         main_round_[_rID].end = main_round_[_rID].end.add(_subTime);
         // 减去冲刺游戏中缩短的时间
@@ -513,17 +515,17 @@ contract MyFomo is UserCenter {
             MyFomoDataSet.EventReturns memory _eventData_;
             _eventData_ = endMainRound(_eventData_);
             // TODO::
-            emit onMainAndSubTop(
-                mainRound, mainRoundStartTime, mainRoundEndTime, mainRoundKey,
-                mainRoundeth, mainRoundPot, subRound, subRoundStartTime, 
-                subRoundEndTime, subRoundKey, subRoundeth, subRoundPot
-            );
+            // emit onMainAndSubTop(
+            //     mainRound, mainRoundStartTime, mainRoundEndTime, mainRoundKey,
+            //     mainRoundeth, mainRoundPot, subRound, subRoundStartTime, 
+            //     subRoundEndTime, subRoundKey, subRoundeth, subRoundPot
+            // );
         }
         else
             emit onMainRestartSubStop(
                 _rID, main_round_[_rID].strt, main_round_[_rID].end, main_round_[_rID].keys,
                 main_round_[_rID].eth, main_round_[_rID].pot, _sub_rID, 
-                sub_round_[_sub_rID].strt, sub_round_[_sub_rID].strt, sub_round_[_sub_rID].keys,
+                sub_round_[_sub_rID].strt, sub_round_[_sub_rID].end, sub_round_[_sub_rID].keys,
                 sub_round_[_sub_rID].eth, sub_round_[_sub_rID].pot
             );
     }
@@ -579,7 +581,6 @@ contract MyFomo is UserCenter {
         main_round_[_rID].ended = true;
         
         // 获取当前轮最后一位买入用户
-        // TODO: by Leon， 每次买入都需要更新plyr
         address _winAddress = main_round_[_rID].plyr;
         bytes32 _winName = users_[addrUids_[_winAddress]].name;
         
@@ -623,12 +624,15 @@ contract MyFomo is UserCenter {
     }
 
 
-    function withdrawEarnings(address _pID)
+    function withdrawEarnings(address _pI)
         private
         returns(uint256)
     {
-        
-        // // from vaults 
+        // 计算用户的可提现金额
+        // TODO::
+        // 1.邀请获益
+        // 2.主奖池分成获益
+        // 3.子奖池分成获益
         // uint256 _earnings = (plyr_[_pID].win).add(plyr_[_pID].gen).add(plyr_[_pID].aff);
         // if (_earnings > 0)
         // {
@@ -651,13 +655,10 @@ contract MyFomo is UserCenter {
     function activate()
         public
     {
-        // only team just can activate 
+        // only team just can activate, now is rosten testnet address,now is deployer
+        // TODO:: add a list to manange
         require(
-            msg.sender == 0x18E90Fc6F70344f53EBd4f6070bf6Aa23e2D748C ||
-            msg.sender == 0x8b4DA1827932D71759687f925D17F81Fc94e3A9D ||
-            msg.sender == 0x8e0d985f3Ec1857BEc39B76aAabDEa6B31B67d53 ||
-            msg.sender == 0x7ac74Fcc1a71b106F12c55ee8F802C9F672Ce40C ||
-			msg.sender == 0xF39e044e1AB204460e06E87c6dca2c6319fC69E3,
+            msg.sender == 0xd0ec0703a5e2b347f573171b8862d014be8490d4,
             "only team just can activate"
         );
         
@@ -666,11 +667,41 @@ contract MyFomo is UserCenter {
         
         // activate the contract 
         activated_ = true;
+        isSubRoundStart = false;
+        isMainRoundStop = false;
+
+        uint256 _now = now;
         
         // lets start first round
         main_round_id_ = 1;
-        main_round_[1].strt = now + rndInit_;
-        main_round_[1].end = now + rndInit_ + rndMax_;
+        sub_round_id_ = 0;
+        main_round_[1].strt = _now + rndInit_;
+        main_round_[1].end = _now + rndInit_ + rndMax_;
+    }
+
+    function activateSubRound()
+        public
+    {
+        // only team just can activate, now is rosten testnet address,now is deployer
+        // TODO:: add a list to manange
+        require(
+            msg.sender == 0xd0ec0703a5e2b347f573171b8862d014be8490d4,
+            "only team just can activate"
+        );
+        
+        // can only be ran once
+        require(isSubRoundStart == false, "subround already started");
+        
+        // activate the contract 
+        isMainRoundStop = true;
+        isSubRoundStart = true;
+
+        uint256 _now = now;
+        
+        // lets start first round
+        sub_round_id_++;
+        sub_round_[sub_round_id_].strt = _now;
+        sub_round_[sub_round_id_].end = _now + subRndMax_;
     }
 
 }
