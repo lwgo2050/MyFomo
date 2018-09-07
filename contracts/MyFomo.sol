@@ -170,7 +170,7 @@ contract MyFomo is UserCenter {
         view
         returns(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
     { 
-        checkStopSubRnd();
+        // checkStopSubRnd();
         MyFomoDataSet.UserAmount memory amt = MyFomoDataSet.UserAmount(0,0,0,0,0,0,0,0,0);
         if (userExist(name))
             amt = userAmounts_[nameAddr_[name.nameFilter()]];
@@ -388,8 +388,9 @@ contract MyFomo is UserCenter {
         // 43% 进行分红
         uint256 _dividend = _eth.mul(main_round_dividend_ration)/100; // 进入分红奖池的比例
         main_round_[_rID].dividend = main_round_[_rID].dividend.add(_dividend);
-        // uint256 _dividend_per_key = _dividend.div(main_round_[_rID].keys); // 计算每个key的股息
+        uint256 _dividend_per_key = _dividend.div(main_round_[_rID].keys); // 计算每个key的股息
         mainPlayerRounds_[_player][_rID].mask = mainPlayerRounds_[_player][_rID].mask.add(main_round_[_rID].mask.mul(_keys)); // 用户每次买入后计算应当扣除的部分
+        main_round_[_rID].mask=_dividend_per_key.add(main_round_[_rID].mask);
         // 10% 推荐人, 跟新推荐人资金信息
         bytes32 _inviter_name = users_[addrUids_[_player]].inviterName;
         uint256 _profit = _eth.mul(main_round_inviter_ration)/100;
@@ -503,7 +504,6 @@ contract MyFomo is UserCenter {
     function mainRestore(uint256 _subTime, uint256 _seconds)
         private 
     {
-        // TODO::
         uint256 _rID = main_round_id_;
         uint256 _sub_rID = sub_round_id_;
         // 结束时间推后冲刺游戏的游戏时间
@@ -514,20 +514,23 @@ contract MyFomo is UserCenter {
         if (main_round_[_rID].end.sub(main_round_[_rID].strt) <= 0) {
             MyFomoDataSet.EventReturns memory _eventData_;
             _eventData_ = endMainRound(_eventData_);
-            // TODO::
-            // emit onMainAndSubTop(
-            //     mainRound, mainRoundStartTime, mainRoundEndTime, mainRoundKey,
-            //     mainRoundeth, mainRoundPot, subRound, subRoundStartTime, 
-            //     subRoundEndTime, subRoundKey, subRoundeth, subRoundPot
-            // );
+            emit onMainAndSubStop(
+                sub_round_[_sub_rID].plyr,
+                users_[addrUids_[sub_round_[_sub_rID].plyr]].name,
+                sub_round_[_sub_rID].pot, 
+                _eventData_.winnerAddr,
+                _eventData_.winnerName,
+                _eventData_.newPot
+            );
         }
-        else
+        else {
             emit onMainRestartSubStop(
                 _rID, main_round_[_rID].strt, main_round_[_rID].end, main_round_[_rID].keys,
                 main_round_[_rID].eth, main_round_[_rID].pot, _sub_rID, 
                 sub_round_[_sub_rID].strt, sub_round_[_sub_rID].end, sub_round_[_sub_rID].keys,
                 sub_round_[_sub_rID].eth, sub_round_[_sub_rID].pot
             );
+        }
     }
 
     /**
@@ -624,24 +627,19 @@ contract MyFomo is UserCenter {
     }
 
 
-    function withdrawEarnings(address _pI)
+    function withdrawEarnings(address _pID)
         private
         returns(uint256)
     {
-        // 计算用户的可提现金额
-        // TODO::
-        // 1.邀请获益
-        // 2.主奖池分成获益
-        // 3.子奖池分成获益
-        // uint256 _earnings = (plyr_[_pID].win).add(plyr_[_pID].gen).add(plyr_[_pID].aff);
-        // if (_earnings > 0)
-        // {
-        //     plyr_[_pID].win = 0;
-        //     plyr_[_pID].gen = 0;
-        //     plyr_[_pID].aff = 0;
-        // }
+        uint256 _rID = main_round_id_;
+        uint256 _bonusPerKey = main_round_[_rID].mask;
+        uint256 _dividend = _bonusPerKey.mul(mainPlayerRounds_[_pID][_rID].totalKeys).sub(mainPlayerRounds_[_pID][_rID].mask);
+        uint256 _bonus = _dividend.add(userAmounts_[_pID].withdrawAble);
+        mainPlayerRounds_[_pID][_rID].mask = _dividend.add(mainPlayerRounds_[_pID][_rID].mask);
+        userAmounts_[_pID].withdrawAble = 0;
+        userAmounts_[_pID].withdraw = _bonus.add(userAmounts_[_pID].withdraw);
 
-        // return(_earnings);
+        return(_bonus);
     }
 
     //==============================================================================

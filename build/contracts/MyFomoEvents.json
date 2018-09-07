@@ -319,26 +319,63 @@
       ],
       "name": "onWithdrawAndDistribute",
       "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "subWinnerAddr",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "subWinnerName",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "subBonus",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "winnerAddr",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "winderName",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "newPot",
+          "type": "uint256"
+        }
+      ],
+      "name": "onMainAndSubStop",
+      "type": "event"
     }
   ],
-  "bytecode": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a72305820936d6ac3e3fdb00e17a28e24b3a8764b1a6c86e5accf6a58eae248bf0770a2770029",
-  "deployedBytecode": "0x6080604052600080fd00a165627a7a72305820936d6ac3e3fdb00e17a28e24b3a8764b1a6c86e5accf6a58eae248bf0770a2770029",
-  "sourceMap": "26:3334:2:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;26:3334:2;;;;;;;",
-  "deployedSourceMap": "26:3334:2:-;;;;;",
-  "source": "pragma solidity ^0.4.24;\n\ncontract MyFomoEvents {\n     // 冲刺阶段，主游戏暂停，冲刺游戏启动\n    event onMainPauseSubStart(\n        uint256 mainRound, // 主游戏轮数\n        uint256 mainRoundStartTime, // 主游戏开始时间\n        uint256 mainRoundEndTime, // 主游戏结束时间\n        uint256 mainRoundKey, // 主游戏钥匙数\n        uint256 mainRoundeth, // 主游戏eth总购买量\n        uint256 mainRoundPot, // 主游戏的总奖池，可用于分配的\n        uint256 subRound, // 冲刺游戏的轮数\n        uint256 subRoundStartTime, // 冲刺游戏开始时间\n        uint256 subRoundEndTime, // 冲刺结束时间\n        uint256 subRoundKey, // 冲刺阶段钥匙数\n        uint256 subRoundeth, // 冲刺阶段的eth\n        uint256 subRoundPot // 冲刺阶段奖池\n    );\n\n  // 冲刺结束，主游戏重新启动\n    event onMainRestartSubStop(\n        uint256 mainRound, // 主游戏轮数\n        uint256 mainRoundStartTime, // 主游戏开始时间\n        uint256 mainRoundEndTime, // 主游戏结束时间\n        uint256 mainRoundKey, // 主游戏钥匙数\n        uint256 mainRoundeth, // 主游戏eth总购买量\n        uint256 mainRoundPot, // 主游戏的总奖池，可用于分配的\n        uint256 subRound, // 冲刺游戏的轮数\n        uint256 subRoundStartTime, // 冲刺游戏开始时间\n        uint256 subRoundEndTime, // 冲刺结束时间\n        uint256 subRoundKey, // 冲刺阶段钥匙数\n        uint256 subRoundeth, // 冲刺阶段的eth\n        uint256 subRoundPot // 冲刺阶段奖池\n    );\n\n    // 游戏启动\n    event onGameActive(uint256 timestamp);\n\n    //-----------------------------------------------\n    event onNewUser (\n        address indexed uaddr,          // 用户地址\n        bytes32 indexed uname,          // 用户名称\n        address indexed inviterAddr,    // 邀请人的地址\n        bytes32 inviterName,            // 邀请人的名称\n        bool isNewPlayer,               // 是否新用户（可能在注册前直接通过address购买过key）\n        uint256 timeStamp               // 时间戳\n    );\n\n    event onUserBuy (\n        address indexed uaddr,          // 用户地址\n        address indexed uname,          // 用户名称\n        address indexed inviterAddr,    // 邀请人地址\n        address inviterName,            // 邀请人名称\n        uint256 roundId,                // 游戏轮数id\n        uint256 keyNum,                 // 购买的钥匙数量 \n        uint256 payed,                  // 支付的eth数量\n        uint256 total,                  // 奖池总量\n        uint256 dividend,               // 分红总量\n        uint256 winerBonus,             // 最终赢家可获得奖金\n        uint256 winerkeys,             // 奖池的key数量\n        uint256 timeStamp               // 时间戳\n    );\n\n    // fired whenever theres a withdraw\n    event onWithdraw\n    (\n        address playerAddress,\n        bytes32 playerName,\n        uint256 ethOut,\n        uint256 timeStamp\n    );\n\n     // fired whenever a withdraw forces end round to be ran\n    event onWithdrawAndDistribute\n    (\n        address playerAddress,\n        bytes32 playerName,\n        uint256 ethOut,\n        address winnerAddr,\n        bytes32 winnerName,\n        uint256 amountWon,\n        uint256 newPot\n    );\n\n}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a7230582079624718fc927898f61b7a5e611244903c00ea79d9badae9bb86b14b60971e520029",
+  "deployedBytecode": "0x6080604052600080fd00a165627a7a7230582079624718fc927898f61b7a5e611244903c00ea79d9badae9bb86b14b60971e520029",
+  "sourceMap": "26:3543:2:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;26:3543:2;;;;;;;",
+  "deployedSourceMap": "26:3543:2:-;;;;;",
+  "source": "pragma solidity ^0.4.24;\n\ncontract MyFomoEvents {\n     // 冲刺阶段，主游戏暂停，冲刺游戏启动\n    event onMainPauseSubStart(\n        uint256 mainRound, // 主游戏轮数\n        uint256 mainRoundStartTime, // 主游戏开始时间\n        uint256 mainRoundEndTime, // 主游戏结束时间\n        uint256 mainRoundKey, // 主游戏钥匙数\n        uint256 mainRoundeth, // 主游戏eth总购买量\n        uint256 mainRoundPot, // 主游戏的总奖池，可用于分配的\n        uint256 subRound, // 冲刺游戏的轮数\n        uint256 subRoundStartTime, // 冲刺游戏开始时间\n        uint256 subRoundEndTime, // 冲刺结束时间\n        uint256 subRoundKey, // 冲刺阶段钥匙数\n        uint256 subRoundeth, // 冲刺阶段的eth\n        uint256 subRoundPot // 冲刺阶段奖池\n    );\n\n  // 冲刺结束，主游戏重新启动\n    event onMainRestartSubStop(\n        uint256 mainRound, // 主游戏轮数\n        uint256 mainRoundStartTime, // 主游戏开始时间\n        uint256 mainRoundEndTime, // 主游戏结束时间\n        uint256 mainRoundKey, // 主游戏钥匙数\n        uint256 mainRoundeth, // 主游戏eth总购买量\n        uint256 mainRoundPot, // 主游戏的总奖池，可用于分配的\n        uint256 subRound, // 冲刺游戏的轮数\n        uint256 subRoundStartTime, // 冲刺游戏开始时间\n        uint256 subRoundEndTime, // 冲刺结束时间\n        uint256 subRoundKey, // 冲刺阶段钥匙数\n        uint256 subRoundeth, // 冲刺阶段的eth\n        uint256 subRoundPot // 冲刺阶段奖池\n    );\n\n    // 游戏启动\n    event onGameActive(uint256 timestamp);\n\n    //-----------------------------------------------\n    event onNewUser (\n        address indexed uaddr,          // 用户地址\n        bytes32 indexed uname,          // 用户名称\n        address indexed inviterAddr,    // 邀请人的地址\n        bytes32 inviterName,            // 邀请人的名称\n        bool isNewPlayer,               // 是否新用户（可能在注册前直接通过address购买过key）\n        uint256 timeStamp               // 时间戳\n    );\n\n    event onUserBuy (\n        address indexed uaddr,          // 用户地址\n        address indexed uname,          // 用户名称\n        address indexed inviterAddr,    // 邀请人地址\n        address inviterName,            // 邀请人名称\n        uint256 roundId,                // 游戏轮数id\n        uint256 keyNum,                 // 购买的钥匙数量 \n        uint256 payed,                  // 支付的eth数量\n        uint256 total,                  // 奖池总量\n        uint256 dividend,               // 分红总量\n        uint256 winerBonus,             // 最终赢家可获得奖金\n        uint256 winerkeys,             // 奖池的key数量\n        uint256 timeStamp               // 时间戳\n    );\n\n    // fired whenever theres a withdraw\n    event onWithdraw\n    (\n        address playerAddress,\n        bytes32 playerName,\n        uint256 ethOut,\n        uint256 timeStamp\n    );\n\n     // fired whenever a withdraw forces end round to be ran\n    event onWithdrawAndDistribute\n    (\n        address playerAddress,\n        bytes32 playerName,\n        uint256 ethOut,\n        address winnerAddr,\n        bytes32 winnerName,\n        uint256 amountWon,\n        uint256 newPot\n    );\n\n    event onMainAndSubStop\n    (\n        address subWinnerAddr,\n        bytes32 subWinnerName,\n        uint256 subBonus,\n        address winnerAddr,\n        bytes32 winderName,\n        uint256 newPot\n\n    );\n\n}",
   "sourcePath": "/Users/jazz/Desktop/proj/DApp/MyFomo/contracts/MyFomoEvents.sol",
   "ast": {
     "absolutePath": "/Users/jazz/Desktop/proj/DApp/MyFomo/contracts/MyFomoEvents.sol",
     "exportedSymbols": {
       "MyFomoEvents": [
-        1992
+        2296
       ]
     },
-    "id": 1993,
+    "id": 2297,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1869,
+        "id": 2159,
         "literals": [
           "solidity",
           "^",
@@ -354,9 +391,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1992,
+        "id": 2296,
         "linearizedBaseContracts": [
-          1992
+          2296
         ],
         "name": "MyFomoEvents",
         "nodeType": "ContractDefinition",
@@ -364,20 +401,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1895,
+            "id": 2185,
             "name": "onMainPauseSubStart",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1894,
+              "id": 2184,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1871,
+                  "id": 2161,
                   "indexed": false,
                   "name": "mainRound",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "149:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -386,7 +423,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1870,
+                    "id": 2160,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "149:7:2",
@@ -400,11 +437,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1873,
+                  "id": 2163,
                   "indexed": false,
                   "name": "mainRoundStartTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "195:26:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -413,7 +450,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1872,
+                    "id": 2162,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "195:7:2",
@@ -427,11 +464,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1875,
+                  "id": 2165,
                   "indexed": false,
                   "name": "mainRoundEndTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "256:24:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -440,7 +477,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1874,
+                    "id": 2164,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "256:7:2",
@@ -454,11 +491,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1877,
+                  "id": 2167,
                   "indexed": false,
                   "name": "mainRoundKey",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "315:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -467,7 +504,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1876,
+                    "id": 2166,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "315:7:2",
@@ -481,11 +518,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1879,
+                  "id": 2169,
                   "indexed": false,
                   "name": "mainRoundeth",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "367:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -494,7 +531,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1878,
+                    "id": 2168,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "367:7:2",
@@ -508,11 +545,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1881,
+                  "id": 2171,
                   "indexed": false,
                   "name": "mainRoundPot",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "425:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -521,7 +558,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1880,
+                    "id": 2170,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "425:7:2",
@@ -535,11 +572,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1883,
+                  "id": 2173,
                   "indexed": false,
                   "name": "subRound",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "501:16:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -548,7 +585,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1882,
+                    "id": 2172,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "501:7:2",
@@ -562,11 +599,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1885,
+                  "id": 2175,
                   "indexed": false,
                   "name": "subRoundStartTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "552:25:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -575,7 +612,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1884,
+                    "id": 2174,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "552:7:2",
@@ -589,11 +626,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1887,
+                  "id": 2177,
                   "indexed": false,
                   "name": "subRoundEndTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "615:23:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -602,7 +639,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1886,
+                    "id": 2176,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "615:7:2",
@@ -616,11 +653,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1889,
+                  "id": 2179,
                   "indexed": false,
                   "name": "subRoundKey",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "670:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -629,7 +666,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1888,
+                    "id": 2178,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "670:7:2",
@@ -643,11 +680,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1891,
+                  "id": 2181,
                   "indexed": false,
                   "name": "subRoundeth",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "724:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -656,7 +693,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1890,
+                    "id": 2180,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "724:7:2",
@@ -670,11 +707,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1893,
+                  "id": 2183,
                   "indexed": false,
                   "name": "subRoundPot",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "775:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -683,7 +720,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1892,
+                    "id": 2182,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "775:7:2",
@@ -703,20 +740,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1921,
+            "id": 2211,
             "name": "onMainRestartSubStop",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1920,
+              "id": 2210,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1897,
+                  "id": 2187,
                   "indexed": false,
                   "name": "mainRound",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "907:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -725,7 +762,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1896,
+                    "id": 2186,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "907:7:2",
@@ -739,11 +776,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1899,
+                  "id": 2189,
                   "indexed": false,
                   "name": "mainRoundStartTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "953:26:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -752,7 +789,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1898,
+                    "id": 2188,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "953:7:2",
@@ -766,11 +803,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1901,
+                  "id": 2191,
                   "indexed": false,
                   "name": "mainRoundEndTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1014:24:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -779,7 +816,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1900,
+                    "id": 2190,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1014:7:2",
@@ -793,11 +830,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1903,
+                  "id": 2193,
                   "indexed": false,
                   "name": "mainRoundKey",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1073:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -806,7 +843,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1902,
+                    "id": 2192,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1073:7:2",
@@ -820,11 +857,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1905,
+                  "id": 2195,
                   "indexed": false,
                   "name": "mainRoundeth",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1125:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -833,7 +870,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1904,
+                    "id": 2194,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1125:7:2",
@@ -847,11 +884,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1907,
+                  "id": 2197,
                   "indexed": false,
                   "name": "mainRoundPot",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1183:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -860,7 +897,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1906,
+                    "id": 2196,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1183:7:2",
@@ -874,11 +911,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1909,
+                  "id": 2199,
                   "indexed": false,
                   "name": "subRound",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1259:16:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -887,7 +924,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1908,
+                    "id": 2198,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1259:7:2",
@@ -901,11 +938,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1911,
+                  "id": 2201,
                   "indexed": false,
                   "name": "subRoundStartTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1310:25:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -914,7 +951,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1910,
+                    "id": 2200,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1310:7:2",
@@ -928,11 +965,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1913,
+                  "id": 2203,
                   "indexed": false,
                   "name": "subRoundEndTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1373:23:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -941,7 +978,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1912,
+                    "id": 2202,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1373:7:2",
@@ -955,11 +992,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1915,
+                  "id": 2205,
                   "indexed": false,
                   "name": "subRoundKey",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1428:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -968,7 +1005,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1914,
+                    "id": 2204,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1428:7:2",
@@ -982,11 +1019,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1917,
+                  "id": 2207,
                   "indexed": false,
                   "name": "subRoundeth",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1482:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -995,7 +1032,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1916,
+                    "id": 2206,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1482:7:2",
@@ -1009,11 +1046,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1919,
+                  "id": 2209,
                   "indexed": false,
                   "name": "subRoundPot",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1533:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1022,7 +1059,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1918,
+                    "id": 2208,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1533:7:2",
@@ -1042,20 +1079,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1925,
+            "id": 2215,
             "name": "onGameActive",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1924,
+              "id": 2214,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1923,
+                  "id": 2213,
                   "indexed": false,
                   "name": "timestamp",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1925,
+                  "scope": 2215,
                   "src": "1626:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1064,7 +1101,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1922,
+                    "id": 2212,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1626:7:2",
@@ -1084,20 +1121,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1939,
+            "id": 2229,
             "name": "onNewUser",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1938,
+              "id": 2228,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1927,
+                  "id": 2217,
                   "indexed": true,
                   "name": "uaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "1731:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1106,7 +1143,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1926,
+                    "id": 2216,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1731:7:2",
@@ -1120,11 +1157,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1929,
+                  "id": 2219,
                   "indexed": true,
                   "name": "uname",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "1787:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1133,7 +1170,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1928,
+                    "id": 2218,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1787:7:2",
@@ -1147,11 +1184,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1931,
+                  "id": 2221,
                   "indexed": true,
                   "name": "inviterAddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "1843:27:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1160,7 +1197,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1930,
+                    "id": 2220,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1843:7:2",
@@ -1174,11 +1211,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1933,
+                  "id": 2223,
                   "indexed": false,
                   "name": "inviterName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "1905:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1187,7 +1224,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1932,
+                    "id": 2222,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1905:7:2",
@@ -1201,11 +1238,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1935,
+                  "id": 2225,
                   "indexed": false,
                   "name": "isNewPlayer",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "1967:16:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1214,7 +1251,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 1934,
+                    "id": 2224,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1967:4:2",
@@ -1228,11 +1265,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1937,
+                  "id": 2227,
                   "indexed": false,
                   "name": "timeStamp",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "2081:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1241,7 +1278,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1936,
+                    "id": 2226,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2081:7:2",
@@ -1261,20 +1298,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1965,
+            "id": 2255,
             "name": "onUserBuy",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1964,
+              "id": 2254,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1941,
+                  "id": 2231,
                   "indexed": true,
                   "name": "uaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2164:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1283,7 +1320,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1940,
+                    "id": 2230,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2164:7:2",
@@ -1297,11 +1334,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1943,
+                  "id": 2233,
                   "indexed": true,
                   "name": "uname",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2220:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1310,7 +1347,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1942,
+                    "id": 2232,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2220:7:2",
@@ -1324,11 +1361,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1945,
+                  "id": 2235,
                   "indexed": true,
                   "name": "inviterAddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2276:27:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1337,7 +1374,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1944,
+                    "id": 2234,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2276:7:2",
@@ -1351,11 +1388,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1947,
+                  "id": 2237,
                   "indexed": false,
                   "name": "inviterName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2335:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1364,7 +1401,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1946,
+                    "id": 2236,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2335:7:2",
@@ -1378,11 +1415,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1949,
+                  "id": 2239,
                   "indexed": false,
                   "name": "roundId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2394:15:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1391,7 +1428,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1948,
+                    "id": 2238,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2394:7:2",
@@ -1405,11 +1442,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1951,
+                  "id": 2241,
                   "indexed": false,
                   "name": "keyNum",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2452:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1418,7 +1455,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1950,
+                    "id": 2240,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2452:7:2",
@@ -1432,11 +1469,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1953,
+                  "id": 2243,
                   "indexed": false,
                   "name": "payed",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2518:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1445,7 +1482,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1952,
+                    "id": 2242,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2518:7:2",
@@ -1459,11 +1496,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1955,
+                  "id": 2245,
                   "indexed": false,
                   "name": "total",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2580:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1472,7 +1509,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1954,
+                    "id": 2244,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2580:7:2",
@@ -1486,11 +1523,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1957,
+                  "id": 2247,
                   "indexed": false,
                   "name": "dividend",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2636:16:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1499,7 +1536,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1956,
+                    "id": 2246,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2636:7:2",
@@ -1513,11 +1550,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1959,
+                  "id": 2249,
                   "indexed": false,
                   "name": "winerBonus",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2692:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1526,7 +1563,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1958,
+                    "id": 2248,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2692:7:2",
@@ -1540,11 +1577,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1961,
+                  "id": 2251,
                   "indexed": false,
                   "name": "winerkeys",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2763:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1553,7 +1590,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1960,
+                    "id": 2250,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2763:7:2",
@@ -1567,11 +1604,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1963,
+                  "id": 2253,
                   "indexed": false,
                   "name": "timeStamp",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2824:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1580,7 +1617,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1962,
+                    "id": 2252,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2824:7:2",
@@ -1600,20 +1637,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1975,
+            "id": 2265,
             "name": "onWithdraw",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1974,
+              "id": 2264,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1967,
+                  "id": 2257,
                   "indexed": false,
                   "name": "playerAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1975,
+                  "scope": 2265,
                   "src": "2952:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1622,7 +1659,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1966,
+                    "id": 2256,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2952:7:2",
@@ -1636,11 +1673,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1969,
+                  "id": 2259,
                   "indexed": false,
                   "name": "playerName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1975,
+                  "scope": 2265,
                   "src": "2983:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1649,7 +1686,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1968,
+                    "id": 2258,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "2983:7:2",
@@ -1663,11 +1700,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1971,
+                  "id": 2261,
                   "indexed": false,
                   "name": "ethOut",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1975,
+                  "scope": 2265,
                   "src": "3011:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1676,7 +1713,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1970,
+                    "id": 2260,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "3011:7:2",
@@ -1690,11 +1727,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1973,
+                  "id": 2263,
                   "indexed": false,
                   "name": "timeStamp",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1975,
+                  "scope": 2265,
                   "src": "3035:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1703,7 +1740,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1972,
+                    "id": 2262,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "3035:7:2",
@@ -1723,20 +1760,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1991,
+            "id": 2281,
             "name": "onWithdrawAndDistribute",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1990,
+              "id": 2280,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1977,
+                  "id": 2267,
                   "indexed": false,
                   "name": "playerAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3170:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1745,7 +1782,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1976,
+                    "id": 2266,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "3170:7:2",
@@ -1759,11 +1796,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1979,
+                  "id": 2269,
                   "indexed": false,
                   "name": "playerName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3201:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1772,7 +1809,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1978,
+                    "id": 2268,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "3201:7:2",
@@ -1786,11 +1823,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1981,
+                  "id": 2271,
                   "indexed": false,
                   "name": "ethOut",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3229:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1799,7 +1836,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1980,
+                    "id": 2270,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "3229:7:2",
@@ -1813,11 +1850,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1983,
+                  "id": 2273,
                   "indexed": false,
                   "name": "winnerAddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3253:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1826,7 +1863,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1982,
+                    "id": 2272,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "3253:7:2",
@@ -1840,11 +1877,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1985,
+                  "id": 2275,
                   "indexed": false,
                   "name": "winnerName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3281:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1853,7 +1890,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1984,
+                    "id": 2274,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "3281:7:2",
@@ -1867,11 +1904,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1987,
+                  "id": 2277,
                   "indexed": false,
                   "name": "amountWon",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3309:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1880,7 +1917,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1986,
+                    "id": 2276,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "3309:7:2",
@@ -1894,11 +1931,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1989,
+                  "id": 2279,
                   "indexed": false,
                   "name": "newPot",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3336:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1907,7 +1944,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1988,
+                    "id": 2278,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "3336:7:2",
@@ -1923,26 +1960,203 @@
               "src": "3160:196:2"
             },
             "src": "3126:231:2"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2295,
+            "name": "onMainAndSubStop",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2294,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2283,
+                  "indexed": false,
+                  "name": "subWinnerAddr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3400:21:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2282,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3400:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2285,
+                  "indexed": false,
+                  "name": "subWinnerName",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3431:21:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2284,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3431:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2287,
+                  "indexed": false,
+                  "name": "subBonus",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3462:16:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2286,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3462:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2289,
+                  "indexed": false,
+                  "name": "winnerAddr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3488:18:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2288,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3488:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2291,
+                  "indexed": false,
+                  "name": "winderName",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3516:18:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2290,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3516:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2293,
+                  "indexed": false,
+                  "name": "newPot",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3544:14:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2292,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3544:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3390:175:2"
+            },
+            "src": "3363:203:2"
           }
         ],
-        "scope": 1993,
-        "src": "26:3334:2"
+        "scope": 2297,
+        "src": "26:3543:2"
       }
     ],
-    "src": "0:3360:2"
+    "src": "0:3569:2"
   },
   "legacyAST": {
     "absolutePath": "/Users/jazz/Desktop/proj/DApp/MyFomo/contracts/MyFomoEvents.sol",
     "exportedSymbols": {
       "MyFomoEvents": [
-        1992
+        2296
       ]
     },
-    "id": 1993,
+    "id": 2297,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1869,
+        "id": 2159,
         "literals": [
           "solidity",
           "^",
@@ -1958,9 +2172,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1992,
+        "id": 2296,
         "linearizedBaseContracts": [
-          1992
+          2296
         ],
         "name": "MyFomoEvents",
         "nodeType": "ContractDefinition",
@@ -1968,20 +2182,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1895,
+            "id": 2185,
             "name": "onMainPauseSubStart",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1894,
+              "id": 2184,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1871,
+                  "id": 2161,
                   "indexed": false,
                   "name": "mainRound",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "149:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1990,7 +2204,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1870,
+                    "id": 2160,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "149:7:2",
@@ -2004,11 +2218,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1873,
+                  "id": 2163,
                   "indexed": false,
                   "name": "mainRoundStartTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "195:26:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2017,7 +2231,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1872,
+                    "id": 2162,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "195:7:2",
@@ -2031,11 +2245,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1875,
+                  "id": 2165,
                   "indexed": false,
                   "name": "mainRoundEndTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "256:24:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2044,7 +2258,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1874,
+                    "id": 2164,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "256:7:2",
@@ -2058,11 +2272,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1877,
+                  "id": 2167,
                   "indexed": false,
                   "name": "mainRoundKey",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "315:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2071,7 +2285,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1876,
+                    "id": 2166,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "315:7:2",
@@ -2085,11 +2299,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1879,
+                  "id": 2169,
                   "indexed": false,
                   "name": "mainRoundeth",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "367:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2098,7 +2312,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1878,
+                    "id": 2168,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "367:7:2",
@@ -2112,11 +2326,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1881,
+                  "id": 2171,
                   "indexed": false,
                   "name": "mainRoundPot",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "425:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2125,7 +2339,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1880,
+                    "id": 2170,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "425:7:2",
@@ -2139,11 +2353,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1883,
+                  "id": 2173,
                   "indexed": false,
                   "name": "subRound",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "501:16:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2152,7 +2366,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1882,
+                    "id": 2172,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "501:7:2",
@@ -2166,11 +2380,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1885,
+                  "id": 2175,
                   "indexed": false,
                   "name": "subRoundStartTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "552:25:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2179,7 +2393,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1884,
+                    "id": 2174,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "552:7:2",
@@ -2193,11 +2407,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1887,
+                  "id": 2177,
                   "indexed": false,
                   "name": "subRoundEndTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "615:23:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2206,7 +2420,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1886,
+                    "id": 2176,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "615:7:2",
@@ -2220,11 +2434,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1889,
+                  "id": 2179,
                   "indexed": false,
                   "name": "subRoundKey",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "670:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2233,7 +2447,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1888,
+                    "id": 2178,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "670:7:2",
@@ -2247,11 +2461,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1891,
+                  "id": 2181,
                   "indexed": false,
                   "name": "subRoundeth",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "724:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2260,7 +2474,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1890,
+                    "id": 2180,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "724:7:2",
@@ -2274,11 +2488,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1893,
+                  "id": 2183,
                   "indexed": false,
                   "name": "subRoundPot",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1895,
+                  "scope": 2185,
                   "src": "775:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2287,7 +2501,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1892,
+                    "id": 2182,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "775:7:2",
@@ -2307,20 +2521,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1921,
+            "id": 2211,
             "name": "onMainRestartSubStop",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1920,
+              "id": 2210,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1897,
+                  "id": 2187,
                   "indexed": false,
                   "name": "mainRound",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "907:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2329,7 +2543,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1896,
+                    "id": 2186,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "907:7:2",
@@ -2343,11 +2557,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1899,
+                  "id": 2189,
                   "indexed": false,
                   "name": "mainRoundStartTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "953:26:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2356,7 +2570,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1898,
+                    "id": 2188,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "953:7:2",
@@ -2370,11 +2584,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1901,
+                  "id": 2191,
                   "indexed": false,
                   "name": "mainRoundEndTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1014:24:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2383,7 +2597,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1900,
+                    "id": 2190,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1014:7:2",
@@ -2397,11 +2611,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1903,
+                  "id": 2193,
                   "indexed": false,
                   "name": "mainRoundKey",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1073:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2410,7 +2624,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1902,
+                    "id": 2192,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1073:7:2",
@@ -2424,11 +2638,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1905,
+                  "id": 2195,
                   "indexed": false,
                   "name": "mainRoundeth",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1125:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2437,7 +2651,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1904,
+                    "id": 2194,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1125:7:2",
@@ -2451,11 +2665,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1907,
+                  "id": 2197,
                   "indexed": false,
                   "name": "mainRoundPot",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1183:20:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2464,7 +2678,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1906,
+                    "id": 2196,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1183:7:2",
@@ -2478,11 +2692,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1909,
+                  "id": 2199,
                   "indexed": false,
                   "name": "subRound",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1259:16:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2491,7 +2705,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1908,
+                    "id": 2198,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1259:7:2",
@@ -2505,11 +2719,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1911,
+                  "id": 2201,
                   "indexed": false,
                   "name": "subRoundStartTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1310:25:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2518,7 +2732,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1910,
+                    "id": 2200,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1310:7:2",
@@ -2532,11 +2746,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1913,
+                  "id": 2203,
                   "indexed": false,
                   "name": "subRoundEndTime",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1373:23:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2545,7 +2759,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1912,
+                    "id": 2202,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1373:7:2",
@@ -2559,11 +2773,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1915,
+                  "id": 2205,
                   "indexed": false,
                   "name": "subRoundKey",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1428:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2572,7 +2786,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1914,
+                    "id": 2204,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1428:7:2",
@@ -2586,11 +2800,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1917,
+                  "id": 2207,
                   "indexed": false,
                   "name": "subRoundeth",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1482:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2599,7 +2813,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1916,
+                    "id": 2206,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1482:7:2",
@@ -2613,11 +2827,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1919,
+                  "id": 2209,
                   "indexed": false,
                   "name": "subRoundPot",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1921,
+                  "scope": 2211,
                   "src": "1533:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2626,7 +2840,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1918,
+                    "id": 2208,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1533:7:2",
@@ -2646,20 +2860,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1925,
+            "id": 2215,
             "name": "onGameActive",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1924,
+              "id": 2214,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1923,
+                  "id": 2213,
                   "indexed": false,
                   "name": "timestamp",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1925,
+                  "scope": 2215,
                   "src": "1626:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2668,7 +2882,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1922,
+                    "id": 2212,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1626:7:2",
@@ -2688,20 +2902,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1939,
+            "id": 2229,
             "name": "onNewUser",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1938,
+              "id": 2228,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1927,
+                  "id": 2217,
                   "indexed": true,
                   "name": "uaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "1731:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2710,7 +2924,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1926,
+                    "id": 2216,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1731:7:2",
@@ -2724,11 +2938,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1929,
+                  "id": 2219,
                   "indexed": true,
                   "name": "uname",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "1787:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2737,7 +2951,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1928,
+                    "id": 2218,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1787:7:2",
@@ -2751,11 +2965,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1931,
+                  "id": 2221,
                   "indexed": true,
                   "name": "inviterAddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "1843:27:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2764,7 +2978,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1930,
+                    "id": 2220,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1843:7:2",
@@ -2778,11 +2992,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1933,
+                  "id": 2223,
                   "indexed": false,
                   "name": "inviterName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "1905:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2791,7 +3005,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1932,
+                    "id": 2222,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1905:7:2",
@@ -2805,11 +3019,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1935,
+                  "id": 2225,
                   "indexed": false,
                   "name": "isNewPlayer",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "1967:16:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2818,7 +3032,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 1934,
+                    "id": 2224,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1967:4:2",
@@ -2832,11 +3046,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1937,
+                  "id": 2227,
                   "indexed": false,
                   "name": "timeStamp",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1939,
+                  "scope": 2229,
                   "src": "2081:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2845,7 +3059,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1936,
+                    "id": 2226,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2081:7:2",
@@ -2865,20 +3079,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1965,
+            "id": 2255,
             "name": "onUserBuy",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1964,
+              "id": 2254,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1941,
+                  "id": 2231,
                   "indexed": true,
                   "name": "uaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2164:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2887,7 +3101,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1940,
+                    "id": 2230,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2164:7:2",
@@ -2901,11 +3115,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1943,
+                  "id": 2233,
                   "indexed": true,
                   "name": "uname",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2220:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2914,7 +3128,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1942,
+                    "id": 2232,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2220:7:2",
@@ -2928,11 +3142,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1945,
+                  "id": 2235,
                   "indexed": true,
                   "name": "inviterAddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2276:27:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2941,7 +3155,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1944,
+                    "id": 2234,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2276:7:2",
@@ -2955,11 +3169,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1947,
+                  "id": 2237,
                   "indexed": false,
                   "name": "inviterName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2335:19:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2968,7 +3182,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1946,
+                    "id": 2236,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2335:7:2",
@@ -2982,11 +3196,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1949,
+                  "id": 2239,
                   "indexed": false,
                   "name": "roundId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2394:15:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2995,7 +3209,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1948,
+                    "id": 2238,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2394:7:2",
@@ -3009,11 +3223,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1951,
+                  "id": 2241,
                   "indexed": false,
                   "name": "keyNum",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2452:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3022,7 +3236,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1950,
+                    "id": 2240,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2452:7:2",
@@ -3036,11 +3250,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1953,
+                  "id": 2243,
                   "indexed": false,
                   "name": "payed",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2518:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3049,7 +3263,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1952,
+                    "id": 2242,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2518:7:2",
@@ -3063,11 +3277,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1955,
+                  "id": 2245,
                   "indexed": false,
                   "name": "total",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2580:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3076,7 +3290,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1954,
+                    "id": 2244,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2580:7:2",
@@ -3090,11 +3304,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1957,
+                  "id": 2247,
                   "indexed": false,
                   "name": "dividend",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2636:16:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3103,7 +3317,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1956,
+                    "id": 2246,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2636:7:2",
@@ -3117,11 +3331,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1959,
+                  "id": 2249,
                   "indexed": false,
                   "name": "winerBonus",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2692:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3130,7 +3344,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1958,
+                    "id": 2248,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2692:7:2",
@@ -3144,11 +3358,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1961,
+                  "id": 2251,
                   "indexed": false,
                   "name": "winerkeys",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2763:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3157,7 +3371,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1960,
+                    "id": 2250,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2763:7:2",
@@ -3171,11 +3385,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1963,
+                  "id": 2253,
                   "indexed": false,
                   "name": "timeStamp",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1965,
+                  "scope": 2255,
                   "src": "2824:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3184,7 +3398,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1962,
+                    "id": 2252,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2824:7:2",
@@ -3204,20 +3418,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1975,
+            "id": 2265,
             "name": "onWithdraw",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1974,
+              "id": 2264,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1967,
+                  "id": 2257,
                   "indexed": false,
                   "name": "playerAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1975,
+                  "scope": 2265,
                   "src": "2952:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3226,7 +3440,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1966,
+                    "id": 2256,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2952:7:2",
@@ -3240,11 +3454,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1969,
+                  "id": 2259,
                   "indexed": false,
                   "name": "playerName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1975,
+                  "scope": 2265,
                   "src": "2983:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3253,7 +3467,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1968,
+                    "id": 2258,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "2983:7:2",
@@ -3267,11 +3481,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1971,
+                  "id": 2261,
                   "indexed": false,
                   "name": "ethOut",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1975,
+                  "scope": 2265,
                   "src": "3011:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3280,7 +3494,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1970,
+                    "id": 2260,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "3011:7:2",
@@ -3294,11 +3508,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1973,
+                  "id": 2263,
                   "indexed": false,
                   "name": "timeStamp",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1975,
+                  "scope": 2265,
                   "src": "3035:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3307,7 +3521,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1972,
+                    "id": 2262,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "3035:7:2",
@@ -3327,20 +3541,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1991,
+            "id": 2281,
             "name": "onWithdrawAndDistribute",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1990,
+              "id": 2280,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1977,
+                  "id": 2267,
                   "indexed": false,
                   "name": "playerAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3170:21:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3349,7 +3563,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1976,
+                    "id": 2266,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "3170:7:2",
@@ -3363,11 +3577,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1979,
+                  "id": 2269,
                   "indexed": false,
                   "name": "playerName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3201:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3376,7 +3590,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1978,
+                    "id": 2268,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "3201:7:2",
@@ -3390,11 +3604,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1981,
+                  "id": 2271,
                   "indexed": false,
                   "name": "ethOut",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3229:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3403,7 +3617,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1980,
+                    "id": 2270,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "3229:7:2",
@@ -3417,11 +3631,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1983,
+                  "id": 2273,
                   "indexed": false,
                   "name": "winnerAddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3253:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3430,7 +3644,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1982,
+                    "id": 2272,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "3253:7:2",
@@ -3444,11 +3658,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1985,
+                  "id": 2275,
                   "indexed": false,
                   "name": "winnerName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3281:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3457,7 +3671,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1984,
+                    "id": 2274,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "3281:7:2",
@@ -3471,11 +3685,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1987,
+                  "id": 2277,
                   "indexed": false,
                   "name": "amountWon",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3309:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3484,7 +3698,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1986,
+                    "id": 2276,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "3309:7:2",
@@ -3498,11 +3712,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1989,
+                  "id": 2279,
                   "indexed": false,
                   "name": "newPot",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1991,
+                  "scope": 2281,
                   "src": "3336:14:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3511,7 +3725,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1988,
+                    "id": 2278,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "3336:7:2",
@@ -3527,13 +3741,190 @@
               "src": "3160:196:2"
             },
             "src": "3126:231:2"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2295,
+            "name": "onMainAndSubStop",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2294,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2283,
+                  "indexed": false,
+                  "name": "subWinnerAddr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3400:21:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2282,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3400:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2285,
+                  "indexed": false,
+                  "name": "subWinnerName",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3431:21:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2284,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3431:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2287,
+                  "indexed": false,
+                  "name": "subBonus",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3462:16:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2286,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3462:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2289,
+                  "indexed": false,
+                  "name": "winnerAddr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3488:18:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2288,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3488:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2291,
+                  "indexed": false,
+                  "name": "winderName",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3516:18:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2290,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3516:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2293,
+                  "indexed": false,
+                  "name": "newPot",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2295,
+                  "src": "3544:14:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2292,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3544:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3390:175:2"
+            },
+            "src": "3363:203:2"
           }
         ],
-        "scope": 1993,
-        "src": "26:3334:2"
+        "scope": 2297,
+        "src": "26:3543:2"
       }
     ],
-    "src": "0:3360:2"
+    "src": "0:3569:2"
   },
   "compiler": {
     "name": "solc",
@@ -3541,5 +3932,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-09-06T14:53:45.979Z"
+  "updatedAt": "2018-09-07T15:22:21.742Z"
 }

@@ -82,4 +82,15 @@ contract MyFomoEvents {
         uint256 newPot
     );
 
+    event onMainAndSubStop
+    (
+        address subWinnerAddr,
+        bytes32 subWinnerName,
+        uint256 subBonus,
+        address winnerAddr,
+        bytes32 winderName,
+        uint256 newPot
+
+    );
+
 }
